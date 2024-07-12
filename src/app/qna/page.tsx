@@ -104,7 +104,7 @@ export default QnA;
 const QnAWrapper = styled.div`
   width: 100%;
   box-sizing: border-box;
-  padding: 85px 200px;
+  padding: 100px 200px;
 
   @media (max-width: 1200px) {
     padding: 100px 100px;
@@ -131,7 +131,7 @@ const Section = styled.div`
   gap: 20px;
 `;
 
-const Title = styled.h2`
+const Title = styled.div`
   font-size: 24px;
   font-weight: 800;
   color: #58595b;
