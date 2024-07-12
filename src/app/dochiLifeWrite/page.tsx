@@ -8,10 +8,13 @@ import styled from "styled-components";
 const DochiLifeWrite = () => {
   const router = useRouter();
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [hashtags, setHashtags] = useState<string[]>([]);
+  const [hashtagInput, setHashtagInput] = useState<string>("");
 
   const handleSubmit = (event: any) => {
     event.preventDefault();
     // 게시글 로직 작성 (POST)
+    console.log({ hashtags }); // 해시태그 목록을 콘솔에 출력 (게시글 작성 로직에 포함)
     router.push("/dochiLife");
   };
 
@@ -24,6 +27,23 @@ const DochiLifeWrite = () => {
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleHashtagInputChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setHashtagInput(event.target.value);
+  };
+
+  const handleAddHashtag = () => {
+    if (hashtagInput.trim() && !hashtags.includes(hashtagInput.trim())) {
+      setHashtags([...hashtags, hashtagInput.trim()]);
+      setHashtagInput("");
+    }
+  };
+
+  const handleRemoveHashtag = (tag: string) => {
+    setHashtags(hashtags.filter((hashtag) => hashtag !== tag));
   };
 
   const handleDivClick = () => {
@@ -53,6 +73,27 @@ const DochiLifeWrite = () => {
         {imagePreview && (
           <ImagePreview src={imagePreview} alt="Image preview" />
         )}
+        <Label>
+          해시태그
+          <HashtagInputWrapper>
+            <Input
+              type="text"
+              value={hashtagInput}
+              onChange={handleHashtagInputChange}
+              placeholder="해시태그를 입력하세요"
+            />
+            <AddHashtagButton type="button" onClick={handleAddHashtag}>
+              추가
+            </AddHashtagButton>
+          </HashtagInputWrapper>
+          <HashtagList>
+            {hashtags.map((tag, index) => (
+              <Hashtag key={index} onClick={() => handleRemoveHashtag(tag)}>
+                #{tag}
+              </Hashtag>
+            ))}
+          </HashtagList>
+        </Label>
         <DivButton onClick={handleDivClick}>작성 완료</DivButton>
       </Form>
     </WriteWrapper>
@@ -136,6 +177,45 @@ const DivButton = styled.div`
   border: none;
   border-radius: 5px;
   align-self: flex-end;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #d3a179;
+  }
+`;
+
+const HashtagInputWrapper = styled.div`
+  display: flex;
+  gap: 10px;
+`;
+
+const AddHashtagButton = styled.button`
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #ffffff;
+  background-color: #e5b080;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #d3a179;
+  }
+`;
+
+const HashtagList = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+`;
+
+const Hashtag = styled.span`
+  background-color: #ccc;
+  color: #ffffff;
+  padding: 10px 10px;
+  border-radius: 5px;
   cursor: pointer;
 
   &:hover {
