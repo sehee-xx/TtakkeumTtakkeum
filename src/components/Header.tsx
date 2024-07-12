@@ -1,18 +1,43 @@
+import { useRouter, usePathname } from "next/navigation";
 import styled from "styled-components";
 
 const Header = () => {
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const onClickLogo = () => {
+    router.push("/");
+  };
+
+  const onClickDochiLife = () => {
+    router.push("/dochiLife");
+  };
+
+  const onClickQnA = () => {
+    router.push("/qna");
+  };
+
+  const onClickBestDochi = () => {
+    router.push("/bestDochi");
+  };
+
   return (
     <HeaderWrapper>
-      <HeaderLeft>
-        <LogoText>따끔따끔</LogoText>
-        <HeaderMenu>
-          <MenuText>도치의 삶</MenuText>
-          <MenuText>자료실</MenuText>
-          <MenuText>입양</MenuText>
-          <MenuText>Q&A</MenuText>
-        </HeaderMenu>
-      </HeaderLeft>
-      <ShowGeumchi>명예 금치 구경하기</ShowGeumchi>
+      <LogoText onClick={onClickLogo}>따끔따끔</LogoText>
+      <HeaderMenu>
+        <MenuText onClick={onClickDochiLife} active={pathname === "/dochiLife"}>
+          도치의 일상
+        </MenuText>
+        <MenuText onClick={onClickQnA} active={pathname === "/qna"}>
+          Q&A
+        </MenuText>
+        <ShowGeumchi
+          onClick={onClickBestDochi}
+          active={pathname === "/bestDochi"}
+        >
+          금주의 도치 보기
+        </ShowGeumchi>
+      </HeaderMenu>
     </HeaderWrapper>
   );
 };
@@ -33,6 +58,7 @@ const HeaderWrapper = styled.div`
   padding: 20px 200px;
   background-color: #ffffff;
   z-index: 1000;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 
   @media (max-width: 1200px) {
     padding: 20px 100px;
@@ -44,16 +70,6 @@ const HeaderWrapper = styled.div`
 
   @media (max-width: 480px) {
     padding: 20px 20px;
-  }
-`;
-
-const HeaderLeft = styled.div`
-  display: flex;
-  flex-direction: row;
-  gap: 30px;
-
-  @media (max-width: 480px) {
-    gap: 15px;
   }
 `;
 
@@ -73,13 +89,13 @@ const HeaderMenu = styled.div`
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 20px;
 `;
 
-const MenuText = styled.label`
+const MenuText = styled.label<{ active?: boolean }>`
   font-size: 18px;
   font-weight: 700;
-  color: #58595b;
+  color: ${(props) => (props.active ? "#d3a179" : "#58595b")};
   cursor: pointer;
 
   &:hover {
@@ -92,7 +108,7 @@ const MenuText = styled.label`
   }
 `;
 
-const ShowGeumchi = styled.div`
+const ShowGeumchi = styled.div<{ active?: boolean }>`
   width: 200px;
   height: 30px;
   display: flex;
@@ -101,7 +117,7 @@ const ShowGeumchi = styled.div`
   justify-content: center;
   font-size: 18px;
   font-weight: 700;
-  color: #58595b;
+  color: ${(props) => (props.active ? "#d3a179" : "#58595b")};
   cursor: pointer;
   width: fit-content;
 
