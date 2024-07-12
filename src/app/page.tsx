@@ -2,17 +2,46 @@
 
 import ClientLayout from "@/components/ClientLayout";
 import Header from "@/components/Header";
-import styled from "styled-components";
+import useIntersectionObserver from "@/hooks/useIntersectionObserver";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import styled, { keyframes } from "styled-components";
 
 export default function Home() {
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+
+  const onClickDochiLife = () => {
+    router.push("/dochiLife");
+  };
+
+  const onClickBestDochi = () => {
+    router.push("/bestDochi");
+  };
+
+  const onClickAdopt = () => {
+    router.push("/adopt");
+  };
+
+  const onClickBoard = () => {
+    router.push("/board");
+  };
+
+  const [ref1, isVisible1] = useIntersectionObserver();
+  const [ref2, isVisible2] = useIntersectionObserver();
+  const [ref3, isVisible3] = useIntersectionObserver();
+  const [ref4, isVisible4] = useIntersectionObserver();
+
   return (
     <>
       <Header />
       <ClientLayout>
         <Section
+          ref={ref1}
           style={{ background: "linear-gradient(135deg, #FFFAE0, #FFE4B5)" }}
+          className={isVisible1 ? "visible" : ""}
         >
-          <CardBig>
+          <CardBig onClick={onClickDochiLife}>
             <ImageWrapper>
               <img src="/MainCard/MainCard1.svg" alt="Hedgehog 1" />
             </ImageWrapper>
@@ -29,7 +58,9 @@ export default function Home() {
           </CardSmall>
         </Section>
         <Section
+          ref={ref2}
           style={{ background: "linear-gradient(135deg,#D3D3D3, #F9F9F9)" }}
+          className={isVisible2 ? "visible" : ""}
         >
           <CardSmall>
             <SmallCard src="/SubCard/SubCard5.png" alt="SubCard5" />
@@ -37,7 +68,7 @@ export default function Home() {
             <SmallCard src="/SubCard/SubCard7.png" alt="SubCard7" />
             <SmallCard src="/SubCard/SubCard8.png" alt="SubCard8" />
           </CardSmall>
-          <CardBig>
+          <CardBig onClick={onClickBestDochi}>
             <ImageWrapper>
               <img src="/MainCard/MainCard2.svg" alt="Hedgehog 2" />
             </ImageWrapper>
@@ -48,9 +79,11 @@ export default function Home() {
           </CardBig>
         </Section>
         <Section
+          ref={ref3}
           style={{ background: "linear-gradient(135deg, #FFF8F1, #FFDAB9)" }}
+          className={isVisible3 ? "visible" : ""}
         >
-          <CardBig>
+          <CardBig onClick={onClickAdopt}>
             <ImageWrapper>
               <img src="/MainCard/MainCard3.svg" alt="Hedgehog 3" />
             </ImageWrapper>
@@ -67,7 +100,9 @@ export default function Home() {
           </CardSmall>
         </Section>
         <Section
+          ref={ref4}
           style={{ background: "linear-gradient(135deg,#E0FFE5, #F6FDEB)" }}
+          className={isVisible4 ? "visible" : ""}
         >
           <CardSmall>
             <SmallCard src="/SubCard/SubCard13.png" alt="SubCard13" />
@@ -75,7 +110,7 @@ export default function Home() {
             <SmallCard src="/SubCard/SubCard15.png" alt="SubCard15" />
             <SmallCard src="/SubCard/SubCard16.png" alt="SubCard16" />
           </CardSmall>
-          <CardBig>
+          <CardBig onClick={onClickBoard}>
             <ImageWrapper>
               <img src="/MainCard/MainCard4.svg" alt="Hedgehog 4" />
             </ImageWrapper>
@@ -90,6 +125,17 @@ export default function Home() {
   );
 }
 
+const fadeIn = keyframes`
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+`;
+
 const Section = styled.section`
   scroll-snap-align: start;
   height: 100vh;
@@ -99,10 +145,23 @@ const Section = styled.section`
   justify-content: center;
   padding: 20px;
   gap: 40px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+
+  &.visible {
+    opacity: 1;
+    transform: translateY(0);
+    animation: ${fadeIn} 0.5s ease-out;
+  }
 
   @media (max-width: 1200px) {
     height: fit-content;
     padding-bottom: 50px;
+  }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
   }
 
   @media (max-width: 480px) {
@@ -149,11 +208,6 @@ const CardSmall = styled.div`
   }
 
   @media (max-width: 768px) {
-    display: flex;
-    flex-direction: column;
-  }
-
-  @media (max-width: 480px) {
     display: none;
   }
 `;
@@ -167,8 +221,22 @@ const SmallCard = styled.img`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: 15px;
   text-align: center;
+  transform: rotate(${() => Math.random() * 10 - 5}deg);
+
+  &:nth-child(even) {
+    transform: rotate(${() => Math.random() * 10 - 5}deg) translateY(-10px);
+  }
+
+  &:nth-child(odd) {
+    transform: rotate(${() => Math.random() * 10 - 5}deg) translateY(10px);
+  }
+
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.2);
+  }
 
   @media (max-width: 1200px) {
     width: 150px;
@@ -213,12 +281,12 @@ const CardText = styled.div`
   h2 {
     font-size: 24px;
     margin-bottom: 10px;
-    color: #333;
+    color: #58595b;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   }
 
   p {
     font-size: 16px;
-    color: #666;
+    color: #58595b;
   }
 `;
