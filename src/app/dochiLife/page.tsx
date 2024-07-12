@@ -40,6 +40,18 @@ const DochiLifeWrapper = styled.div`
   box-sizing: border-box;
   padding: 100px 200px;
   /* background: linear-gradient(135deg, #f0f0f0, #ffffff); */
+
+  @media (max-width: 1200px) {
+    padding: 100px 100px;
+  }
+
+  @media (max-width: 768px) {
+    padding: 100px 50px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 90px 20px 30px 20px;
+  }
 `;
 
 const TitleText = styled.div`
@@ -49,6 +61,11 @@ const TitleText = styled.div`
   padding-bottom: 40px;
   /* text-align: center; */
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+
+  @media (max-width: 480px) {
+    font-size: 16px;
+    padding-bottom: 20px;
+  }
 `;
 
 const CardGrid = styled.div`
@@ -112,6 +129,10 @@ const CardOverlay = styled.div`
 const CardContent = styled.div`
   padding: 20px;
   /* text-align: center; */
+
+  @media (max-width: 480px) {
+    padding: 15px;
+  }
 `;
 
 const CardTitle = styled.div`
@@ -124,9 +145,17 @@ const CardTitle = styled.div`
   ${Card}:hover & {
     color: #d3a179;
   }
+
+  @media (max-width: 480px) {
+    font-size: 14px;
+  }
 `;
 
 const CardDate = styled.div`
   font-size: 14px;
   color: #777;
+
+  @media (max-width: 480px) {
+    font-size: 12px;
+  }
 `;
