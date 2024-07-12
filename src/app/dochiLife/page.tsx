@@ -1,9 +1,11 @@
 "use client";
 
 import Header from "@/components/Header";
+import { useRouter } from "next/navigation";
 import styled from "styled-components";
 
 const DochiLife = () => {
+  const router = useRouter();
   const cardData = Array.from({ length: 25 }, (_, index) => ({
     id: index + 1,
     image: `/dochiLife/ex${index + 1}.png`,
@@ -11,13 +13,24 @@ const DochiLife = () => {
     date: `2023-07-${index + 1}`,
   }));
 
+  const handleCardClick = (id: number, title: string, image: string) => {
+    router.push(
+      `/dochiLifeDetail/${id}?title=${encodeURIComponent(
+        title
+      )}&image=${encodeURIComponent(image)}`
+    );
+  };
+
   return (
     <DochiLifeWrapper>
       <Header />
       <TitleText>[ 도치의 일상 ]</TitleText>
       <CardGrid>
         {cardData.map((card) => (
-          <Card key={card.id}>
+          <Card
+            key={card.id}
+            onClick={() => handleCardClick(card.id, card.title, card.image)}
+          >
             <CardImageWrapper>
               <CardImage src={card.image} alt={card.title} />
               <CardOverlay />
@@ -39,7 +52,6 @@ const DochiLifeWrapper = styled.div`
   width: 100%;
   box-sizing: border-box;
   padding: 100px 200px;
-  /* background: linear-gradient(135deg, #f0f0f0, #ffffff); */
 
   @media (max-width: 1200px) {
     padding: 100px 100px;
@@ -59,7 +71,6 @@ const TitleText = styled.div`
   font-weight: 800;
   color: #333;
   padding-bottom: 40px;
-  /* text-align: center; */
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
 
   @media (max-width: 480px) {
@@ -128,7 +139,6 @@ const CardOverlay = styled.div`
 
 const CardContent = styled.div`
   padding: 20px;
-  /* text-align: center; */
 
   @media (max-width: 480px) {
     padding: 15px;
