@@ -43,7 +43,7 @@ const DochiLifeWrapper = styled.div`
 `;
 
 const TitleText = styled.div`
-  font-size: 26px;
+  font-size: 24px;
   font-weight: 800;
   color: #333;
   padding-bottom: 40px;
