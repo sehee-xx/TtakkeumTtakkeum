@@ -31,6 +31,8 @@ const Signup = () => {
       <SignupBox>
         <SignupImg src="/Signup.svg" />
         <SignupText>회원가입</SignupText>
+        <Input placeholder="닉네임을 입력해주세요" />
+        <Input placeholder="고슴도치의 이름을 입력해주세요" />
         <Input placeholder="아이디를 입력해주세요" />
         <Input placeholder="비밀번호를 입력해주세요" />
         <Input placeholder="비밀번호를 다시 입력해주세요" />
@@ -46,6 +48,8 @@ const SignupWrapper = styled.div`
   width: 100%;
   height: 100vh;
   padding: 50px;
+  margin-top: 50px;
+  margin-bottom: 30px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
