@@ -21,10 +21,15 @@ const DochiLife = () => {
     );
   };
 
+  const handleWriteClick = () => {
+    router.push("/dochiLifeWrite");
+  };
+
   return (
     <DochiLifeWrapper>
       <Header />
       <TitleText>[ 도치의 일상 ]</TitleText>
+      <WriteButton onClick={handleWriteClick}>작성하기</WriteButton>
       <CardGrid>
         {cardData.map((card) => (
           <Card
@@ -52,6 +57,7 @@ const DochiLifeWrapper = styled.div`
   width: 100%;
   box-sizing: border-box;
   padding: 100px 200px;
+  position: relative;
 
   @media (max-width: 1200px) {
     padding: 100px 100px;
@@ -76,6 +82,46 @@ const TitleText = styled.div`
   @media (max-width: 480px) {
     font-size: 16px;
     padding-bottom: 20px;
+  }
+`;
+
+const WriteButton = styled.div`
+  position: absolute;
+  top: 100px;
+  right: 200px;
+  width: 100px;
+  height: 40px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #ffffff;
+  background-color: #e5b080;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #d3a179;
+  }
+
+  @media (max-width: 1200px) {
+    top: 100px;
+    right: 100px;
+  }
+
+  @media (max-width: 768px) {
+    top: 95px;
+    right: 50px;
+  }
+
+  @media (max-width: 480px) {
+    top: 85px;
+    right: 20px;
+    font-size: 12px;
+    width: 80px;
+    height: 30px;
   }
 `;
 

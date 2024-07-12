@@ -2,6 +2,7 @@
 
 import Header from "@/components/Header";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
 import styled from "styled-components";
 
 const DochiLifeDetail = () => {
@@ -10,6 +11,15 @@ const DochiLifeDetail = () => {
   const title = searchParams.get("title") || "제목 없음";
   const image = searchParams.get("image") || "/loading.svg";
   const id = parseInt(searchParams.get("id") || "0", 10);
+
+  const [liked, setLiked] = useState(false);
+  const [comments, setComments] = useState<string[]>([]);
+  const [commentInput, setCommentInput] = useState("");
+  const [hashtags, setHashtags] = useState<string[]>([
+    "#고슴도치",
+    "#일상",
+    "#애완동물",
+  ]);
 
   const cardData = Array.from({ length: 25 }, (_, index) => ({
     id: index + 1,
@@ -20,15 +30,31 @@ const DochiLifeDetail = () => {
 
   const relatedCards = cardData.filter((card) => card.id !== id);
 
-  console.log(id);
-  console.log(relatedCards);
-
   const handleRelatedCardClick = (id: number, title: string, image: string) => {
     router.push(
       `/dochiLifeDetail/${id}?title=${encodeURIComponent(
         title
       )}&image=${encodeURIComponent(image)}`
     );
+  };
+
+  const toggleLike = () => {
+    setLiked((prev) => !prev);
+  };
+
+  const handleCommentSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+    if (commentInput.trim()) {
+      setComments([...comments, commentInput]);
+      setCommentInput("");
+    }
+  };
+
+  const handleDivClick = () => {
+    const form = document.getElementById("commentForm") as HTMLFormElement;
+    if (form) {
+      form.requestSubmit();
+    }
   };
 
   return (
@@ -51,24 +77,31 @@ const DochiLifeDetail = () => {
               albiventris)와 알제리고슴도치(Algerian hedgehog, A. algirus)의
               교배종이다.
             </DescriptionText>
+            <HashtagList>
+              {hashtags.map((hashtag, index) => (
+                <Hashtag key={index}>{hashtag}</Hashtag>
+              ))}
+            </HashtagList>
+            <LikeButton onClick={toggleLike}>
+              {liked ? "좋아요 취소" : "좋아요"}
+            </LikeButton>
           </CardContent>
         </Card>
-        <RelatedCardsGrid>
-          {relatedCards.map((card) => (
-            <RelatedCard
-              key={card.id}
-              onClick={() =>
-                handleRelatedCardClick(card.id, card.title, card.image)
-              }
-            >
-              <RelatedCardImage src={card.image} alt={card.title} />
-              <RelatedCardContent>
-                <RelatedCardTitle>{card.title}</RelatedCardTitle>
-                <RelatedCardDate>{card.date}</RelatedCardDate>
-              </RelatedCardContent>
-            </RelatedCard>
-          ))}
-        </RelatedCardsGrid>
+        <CommentSection>
+          <CommentForm id="commentForm" onSubmit={handleCommentSubmit}>
+            <CommentInput
+              value={commentInput}
+              onChange={(e) => setCommentInput(e.target.value)}
+              placeholder="댓글을 작성하세요..."
+            />
+            <DivCommentButton onClick={handleDivClick}>작성</DivCommentButton>
+          </CommentForm>
+          <CommentList>
+            {comments.map((comment, index) => (
+              <Comment key={index}>{comment}</Comment>
+            ))}
+          </CommentList>
+        </CommentSection>
       </ContentWrapper>
     </DochiLifeDetailWrapper>
   );
@@ -110,7 +143,7 @@ const Card = styled.div`
   background: #fff;
   border-radius: 60px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  margin-top: 40px;
+  margin-top: 15px;
   overflow: hidden;
 
   @media (max-width: 768px) {
@@ -157,6 +190,7 @@ const TitleText = styled.div`
   @media (max-width: 480px) {
     font-size: 24px;
     padding-bottom: 10px;
+    font-size: 20px;
   }
 `;
 
@@ -166,73 +200,94 @@ const DescriptionText = styled.div`
   line-height: 1.6;
 
   @media (max-width: 480px) {
-    font-size: 16px;
-  }
-`;
-
-const RelatedCardsGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 20px;
-  width: 100%;
-`;
-
-const RelatedCard = styled.div`
-  background: #fff;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  transition: transform 0.3s, box-shadow 0.3s;
-  cursor: pointer;
-
-  &:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
-  }
-`;
-
-const RelatedCardImage = styled.img`
-  width: 100%;
-  height: 200px;
-  object-fit: cover;
-  transition: transform 0.3s;
-
-  ${RelatedCard}:hover & {
-    transform: scale(1.1);
-  }
-`;
-
-const RelatedCardContent = styled.div`
-  padding: 20px;
-
-  @media (max-width: 480px) {
-    padding: 15px;
-  }
-`;
-
-const RelatedCardTitle = styled.div`
-  font-size: 20px;
-  font-weight: 700;
-  color: #333;
-  margin-bottom: 10px;
-  transition: color 0.3s;
-
-  ${RelatedCard}:hover & {
-    color: #d3a179;
-  }
-
-  @media (max-width: 480px) {
     font-size: 14px;
   }
 `;
 
-const RelatedCardDate = styled.div`
-  font-size: 14px;
-  color: #777;
+const HashtagList = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+`;
 
-  @media (max-width: 480px) {
-    font-size: 12px;
+const Hashtag = styled.span`
+  background-color: #ccc;
+  color: #ffffff;
+  padding: 10px 10px;
+  border-radius: 5px;
+`;
+
+const LikeButton = styled.div`
+  width: 100px;
+  height: 40px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #ffffff;
+  background-color: #e5b080;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 20px;
+
+  &:hover {
+    background-color: #d3a179;
   }
+`;
+
+const CommentSection = styled.div`
+  width: 100%;
+  max-width: 1000px;
+  background: #f9f9f9;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+`;
+
+const CommentForm = styled.form`
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+`;
+
+const CommentInput = styled.input`
+  flex: 1;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+`;
+
+const DivCommentButton = styled.div`
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #ffffff;
+  background-color: #e5b080;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background-color: #d3a179;
+  }
+`;
+
+const CommentList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+`;
+
+const Comment = styled.div`
+  background: #fff;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 `;
