@@ -8,7 +8,6 @@ import { useState } from "react";
 import styled, { keyframes } from "styled-components";
 
 export default function Home() {
-  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   const onClickDochiLife = () => {
@@ -19,18 +18,13 @@ export default function Home() {
     router.push("/bestDochi");
   };
 
-  const onClickAdopt = () => {
-    router.push("/adopt");
-  };
-
-  const onClickBoard = () => {
-    router.push("/board");
+  const onClickQnA = () => {
+    router.push("/qna");
   };
 
   const [ref1, isVisible1] = useIntersectionObserver();
   const [ref2, isVisible2] = useIntersectionObserver();
   const [ref3, isVisible3] = useIntersectionObserver();
-  const [ref4, isVisible4] = useIntersectionObserver();
 
   return (
     <>
@@ -80,45 +74,24 @@ export default function Home() {
         </Section>
         <Section
           ref={ref3}
-          style={{ background: "linear-gradient(135deg, #FFF8F1, #FFDAB9)" }}
+          style={{ background: "linear-gradient(135deg,#E0FFE5, #F6FDEB)" }}
           className={isVisible3 ? "visible" : ""}
         >
-          <CardBig onClick={onClickAdopt}>
+          <CardBig onClick={onClickQnA}>
             <ImageWrapper>
-              <img src="/MainCard/MainCard3.svg" alt="Hedgehog 3" />
+              <img src="/MainCard/MainCard4.svg" alt="Hedgehog 4" />
             </ImageWrapper>
             <CardText>
-              <h2>고슴도치 입양하기</h2>
-              <p>새로운 가족을 찾아주세요. 고슴도치를 입양해보세요.</p>
+              <h2>정보 공유하기</h2>
+              <p>고슴도치에 대한 질문과 답변을 통해 정보를 공유해보세요.</p>
             </CardText>
           </CardBig>
-          <CardSmall>
-            <SmallCard src="/SubCard/SubCard9.png" alt="SubCard9" />
-            <SmallCard src="/SubCard/SubCard10.png" alt="SubCard10" />
-            <SmallCard src="/SubCard/SubCard11.png" alt="SubCard11" />
-            <SmallCard src="/SubCard/SubCard12.png" alt="SubCard12" />
-          </CardSmall>
-        </Section>
-        <Section
-          ref={ref4}
-          style={{ background: "linear-gradient(135deg,#E0FFE5, #F6FDEB)" }}
-          className={isVisible4 ? "visible" : ""}
-        >
           <CardSmall>
             <SmallCard src="/SubCard/SubCard13.png" alt="SubCard13" />
             <SmallCard src="/SubCard/SubCard14.png" alt="SubCard14" />
             <SmallCard src="/SubCard/SubCard15.png" alt="SubCard15" />
             <SmallCard src="/SubCard/SubCard16.png" alt="SubCard16" />
           </CardSmall>
-          <CardBig onClick={onClickBoard}>
-            <ImageWrapper>
-              <img src="/MainCard/MainCard4.svg" alt="Hedgehog 4" />
-            </ImageWrapper>
-            <CardText>
-              <h2>정보 공유하기</h2>
-              <p>고슴도치에 대한 유용한 정보를 공유하세요.</p>
-            </CardText>
-          </CardBig>
         </Section>
       </ClientLayout>
     </>
