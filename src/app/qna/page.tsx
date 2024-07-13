@@ -8,13 +8,20 @@ const QnA = () => {
   const [questions, setQuestions] = useState([
     {
       id: 1,
+      author: "사용자1",
       question: "고슴도치 먹이는 무엇이 좋을까요?",
-      answers: ["곤충이 좋습니다.", "사료도 가능합니다."],
+      answers: [
+        { id: 1, author: "사용자2", content: "곤충이 좋습니다." },
+        { id: 2, author: "사용자3", content: "사료도 가능합니다." },
+      ],
     },
     {
       id: 2,
+      author: "사용자4",
       question: "고슴도치의 적정 온도는?",
-      answers: ["22도에서 26도가 적당합니다."],
+      answers: [
+        { id: 1, author: "사용자5", content: "22도에서 26도가 적당합니다." },
+      ],
     },
   ]);
 
@@ -29,7 +36,12 @@ const QnA = () => {
     if (questionInput.trim()) {
       setQuestions([
         ...questions,
-        { id: questions.length + 1, question: questionInput, answers: [] },
+        {
+          id: questions.length + 1,
+          author: "새 작성자", // 임의의 작성자 이름
+          question: questionInput,
+          answers: [],
+        },
       ]);
       setQuestionInput("");
     }
@@ -41,7 +53,17 @@ const QnA = () => {
       setQuestions(
         questions.map((q) =>
           q.id === questionId
-            ? { ...q, answers: [...q.answers, answerInput] }
+            ? {
+                ...q,
+                answers: [
+                  ...q.answers,
+                  {
+                    id: q.answers.length + 1,
+                    author: "새 작성자", // 임의의 작성자 이름
+                    content: answerInput,
+                  },
+                ],
+              }
             : q
         )
       );
@@ -58,10 +80,14 @@ const QnA = () => {
           <Title>[ Q&A ]</Title>
           {questions.map((q) => (
             <Question key={q.id}>
+              <QuestionAuthor>{q.author}</QuestionAuthor>
               <QuestionText>{q.question}</QuestionText>
               <AnswerList>
                 {q.answers.map((answer, index) => (
-                  <Answer key={index}>{answer}</Answer>
+                  <Answer key={index}>
+                    <AnswerAuthor>{answer.author}</AnswerAuthor>
+                    {answer.content}
+                  </Answer>
                 ))}
               </AnswerList>
               {selectedQuestionId === q.id ? (
@@ -146,6 +172,13 @@ const Question = styled.div`
   flex-direction: column;
 `;
 
+const QuestionAuthor = styled.div`
+  font-size: 14px;
+  font-weight: 700;
+  color: #58595b;
+  margin-bottom: 5px;
+`;
+
 const QuestionText = styled.div`
   font-size: 18px;
   font-weight: 700;
@@ -164,6 +197,13 @@ const Answer = styled.div`
   border-radius: 5px;
   margin-bottom: 10px;
   color: #58595b;
+`;
+
+const AnswerAuthor = styled.div`
+  font-size: 14px;
+  font-weight: 700;
+  color: #58595b;
+  margin-bottom: 5px;
 `;
 
 const Form = styled.form`
