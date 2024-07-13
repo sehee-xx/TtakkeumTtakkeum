@@ -1,6 +1,7 @@
 "use client";
 
 import Header from "@/components/Header";
+import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import styled from "styled-components";
@@ -8,19 +9,39 @@ import styled from "styled-components";
 const DochiLifeWrite = () => {
   const router = useRouter();
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [hashtags, setHashtags] = useState<string[]>([]);
   const [hashtagInput, setHashtagInput] = useState<string>("");
+  const [title, setTitle] = useState<string>("");
+  const [content, setContent] = useState<string>("");
 
-  const handleSubmit = (event: any) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    // 게시글 로직 작성 (POST)
-    console.log({ hashtags }); // 해시태그 목록을 콘솔에 출력 (게시글 작성 로직에 포함)
-    router.push("/dochiLife");
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("content", content);
+    if (imageFile) {
+      formData.append("imageUrl", imageFile);
+    }
+    formData.append("hashtag", JSON.stringify(hashtags));
+
+    try {
+      console.log(process.env.BACKEND_HOSTNAME);
+      const response = await axios.post(
+        `${process.env.BACKEND_HOSTNAME}/articles`,
+        formData
+      );
+      console.log("글 작성 성공", response.data);
+      router.push("/dochiLife");
+    } catch (error) {
+      console.error("글 작성 실패", error);
+    }
   };
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      setImageFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result as string);
@@ -46,13 +67,6 @@ const DochiLifeWrite = () => {
     setHashtags(hashtags.filter((hashtag) => hashtag !== tag));
   };
 
-  const handleDivClick = () => {
-    const form = document.getElementById("writeForm") as HTMLFormElement;
-    if (form) {
-      form.requestSubmit(); // 이 메서드는 버튼 없이 폼을 제출합니다.
-    }
-  };
-
   return (
     <WriteWrapper>
       <Header />
@@ -60,11 +74,21 @@ const DochiLifeWrite = () => {
         <Title>[ 게시글 작성 ]</Title>
         <Label>
           제목
-          <Input type="text" required />
+          <Input
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            required
+          />
         </Label>
         <Label>
           내용
-          <Textarea rows={10} required />
+          <Textarea
+            rows={10}
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            required
+          />
         </Label>
         <Label>
           이미지 업로드
@@ -94,7 +118,7 @@ const DochiLifeWrite = () => {
             ))}
           </HashtagList>
         </Label>
-        <DivButton onClick={handleDivClick}>작성 완료</DivButton>
+        <Button type="submit">작성 완료</Button>
       </Form>
     </WriteWrapper>
   );
@@ -164,7 +188,7 @@ const ImagePreview = styled.img`
   border-radius: 5px;
 `;
 
-const DivButton = styled.div`
+const Button = styled.button`
   width: 120px;
   height: 50px;
   font-size: 18px;
