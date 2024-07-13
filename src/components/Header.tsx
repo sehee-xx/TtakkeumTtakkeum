@@ -21,22 +21,39 @@ const Header = () => {
     router.push("/bestDochi");
   };
 
+  const onClickSignin = () => {
+    router.push("/signin");
+  };
+
+  const onClickSignup = () => {
+    router.push("/signup");
+  };
+
   return (
     <HeaderWrapper>
       <LogoText onClick={onClickLogo}>따끔따끔</LogoText>
       <HeaderMenu>
-        <MenuText onClick={onClickDochiLife} active={pathname === "/dochiLife"}>
+        <MenuText
+          onClick={onClickDochiLife}
+          active={pathname.includes("/dochiLife")}
+        >
           도치의 일상
         </MenuText>
-        <MenuText onClick={onClickQnA} active={pathname === "/qna"}>
+        <MenuText onClick={onClickQnA} active={pathname.includes("/qna")}>
           Q&A
         </MenuText>
         <ShowGeumchi
           onClick={onClickBestDochi}
-          active={pathname === "/bestDochi"}
+          active={pathname.includes("/bestDochi")}
         >
           금주의 도치 보기
         </ShowGeumchi>
+        <MenuText onClick={onClickSignin} active={pathname.includes("/signin")}>
+          로그인
+        </MenuText>
+        <MenuText onClick={onClickSignup} active={pathname.includes("/signup")}>
+          회원가입
+        </MenuText>
       </HeaderMenu>
     </HeaderWrapper>
   );
