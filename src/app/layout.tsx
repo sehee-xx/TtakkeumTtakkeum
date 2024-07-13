@@ -1,6 +1,5 @@
 "use client";
 
-import type { Metadata } from "next";
 import GlobalStyle from "../../styles/GlobalStyles";
 
 export default function RootLayout({

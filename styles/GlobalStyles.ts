@@ -37,6 +37,10 @@ const GlobalStyle = createGlobalStyle`
   #__next {
     height: 100%;
   }
+
+  * {
+    cursor: url('/cursor.png'), auto !important;
+  }
 `;
 
 export default GlobalStyle;
