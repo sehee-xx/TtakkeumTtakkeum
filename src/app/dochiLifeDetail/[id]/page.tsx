@@ -13,8 +13,28 @@ const DochiLifeDetail = () => {
   const id = parseInt(searchParams.get("id") || "0", 10);
 
   const [liked, setLiked] = useState(false);
-  const [comments, setComments] = useState<string[]>([]);
+  const [comments, setComments] = useState([
+    {
+      id: 1,
+      author: "작성자1",
+      content: "댓글 내용 1",
+      replies: [
+        { id: 1, author: "작성자2", content: "답글 내용 1-1" },
+        { id: 2, author: "작성자3", content: "답글 내용 1-2" },
+      ],
+    },
+    {
+      id: 2,
+      author: "작성자4",
+      content: "댓글 내용 2",
+      replies: [],
+    },
+  ]);
   const [commentInput, setCommentInput] = useState("");
+  const [replyInput, setReplyInput] = useState("");
+  const [selectedCommentId, setSelectedCommentId] = useState<number | null>(
+    null
+  );
   const [hashtags, setHashtags] = useState<string[]>([
     "#고슴도치",
     "#일상",
@@ -45,8 +65,40 @@ const DochiLifeDetail = () => {
   const handleCommentSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     if (commentInput.trim()) {
-      setComments([...comments, commentInput]);
+      setComments([
+        ...comments,
+        {
+          id: comments.length + 1,
+          author: "새 작성자",
+          content: commentInput,
+          replies: [],
+        },
+      ]);
       setCommentInput("");
+    }
+  };
+
+  const handleReplySubmit = (commentId: number) => {
+    if (replyInput.trim()) {
+      setComments(
+        comments.map((comment) =>
+          comment.id === commentId
+            ? {
+                ...comment,
+                replies: [
+                  ...comment.replies,
+                  {
+                    id: comment.replies.length + 1,
+                    author: "새 작성자",
+                    content: replyInput,
+                  },
+                ],
+              }
+            : comment
+        )
+      );
+      setReplyInput("");
+      setSelectedCommentId(null);
     }
   };
 
@@ -97,8 +149,36 @@ const DochiLifeDetail = () => {
             <DivCommentButton onClick={handleDivClick}>작성</DivCommentButton>
           </CommentForm>
           <CommentList>
-            {comments.map((comment, index) => (
-              <Comment key={index}>{comment}</Comment>
+            {comments.map((comment) => (
+              <Comment key={comment.id}>
+                <CommentAuthor>{comment.author}</CommentAuthor>
+                <CommentContent>{comment.content}</CommentContent>
+                <ReplyList>
+                  {comment.replies.map((reply) => (
+                    <Reply key={reply.id}>
+                      <ReplyAuthor>{reply.author}</ReplyAuthor>
+                      <ReplyContent>{reply.content}</ReplyContent>
+                    </Reply>
+                  ))}
+                </ReplyList>
+                {selectedCommentId === comment.id ? (
+                  <ReplyForm onSubmit={(event) => event.preventDefault()}>
+                    <ReplyInput
+                      value={replyInput}
+                      onChange={(e) => setReplyInput(e.target.value)}
+                      placeholder="답글을 입력하세요..."
+                      required
+                    />
+                    <DivButton onClick={() => handleReplySubmit(comment.id)}>
+                      답글 달기
+                    </DivButton>
+                  </ReplyForm>
+                ) : (
+                  <ReplyButton onClick={() => setSelectedCommentId(comment.id)}>
+                    답글 달기
+                  </ReplyButton>
+                )}
+              </Comment>
             ))}
           </CommentList>
         </CommentSection>
@@ -282,7 +362,7 @@ const DivCommentButton = styled.div`
 const CommentList = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 20px;
 `;
 
 const Comment = styled.div`
@@ -290,4 +370,95 @@ const Comment = styled.div`
   padding: 10px;
   border-radius: 5px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  position: relative;
+  padding-bottom: 50px;
+`;
+
+const CommentAuthor = styled.div`
+  font-size: 14px;
+  font-weight: 700;
+  color: #333;
+`;
+
+const CommentContent = styled.div`
+  font-size: 16px;
+  color: #555;
+  margin-top: 5px;
+`;
+
+const ReplyList = styled.div`
+  margin-top: 10px;
+  padding-left: 20px;
+`;
+
+const Reply = styled.div`
+  background: #f0f0f0;
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+`;
+
+const ReplyAuthor = styled.div`
+  font-size: 14px;
+  font-weight: 700;
+  color: #333;
+`;
+
+const ReplyContent = styled.div`
+  font-size: 16px;
+  color: #555;
+  margin-top: 5px;
+`;
+
+const ReplyForm = styled.form`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+`;
+
+const ReplyInput = styled.textarea`
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  resize: none;
+`;
+
+const DivButton = styled.div`
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #ffffff;
+  background-color: #e5b080;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background-color: #d3a179;
+  }
+`;
+
+const ReplyButton = styled.div`
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #ffffff;
+  background-color: #5a9;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+  width: fit-content;
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+
+  &:hover {
+    background-color: #47a;
+  }
 `;
