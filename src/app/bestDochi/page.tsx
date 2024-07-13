@@ -30,7 +30,7 @@ const BestDochi = () => {
   return (
     <BestDochiWrapper>
       <Header />
-      <Title>금주의 도치 구경하기</Title>
+      <Title>[ 금주의 도치 보기 ]</Title>
       <DochiGrid>
         {top10Dochi.map((dochi, index) => (
           <DochiCard key={dochi.id}>
@@ -75,12 +75,16 @@ const BestDochiWrapper = styled.div`
   }
 `;
 
-const Title = styled.h1`
+const Title = styled.div`
   font-size: 24px;
   font-weight: 800;
-  color: #333;
-  text-align: center;
-  margin-bottom: 40px;
+  color: #58595b;
+  padding-bottom: 30px;
+
+  @media (max-width: 480px) {
+    font-size: 16px;
+    padding-bottom: 20px;
+  }
 `;
 
 const DochiGrid = styled.div`
@@ -105,12 +109,20 @@ const DochiCard = styled.div`
     transform: translateY(-10px);
     box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
   }
+
+  @media (max-width: 480px) {
+    padding: 10px;
+  }
 `;
 
 const Medal = styled.div`
   font-size: 80px;
   font-weight: 800;
   margin-right: 20px;
+
+  @media (max-width: 480px) {
+    font-size: 60px;
+  }
 `;
 
 const DochiInfo = styled.div`
@@ -124,11 +136,19 @@ const DochiName = styled.div`
   font-weight: 700;
   color: #333;
   margin-bottom: 5px;
+
+  @media (max-width: 480px) {
+    font-size: 16px;
+  }
 `;
 
 const DochiPoints = styled.div`
   font-size: 18px;
   color: #777;
+
+  @media (max-width: 480px) {
+    font-size: 12px;
+  }
 `;
 
 const DochiImage = styled.img`
