@@ -4,7 +4,6 @@ import ClientLayout from "@/components/ClientLayout";
 import Header from "@/components/Header";
 import useIntersectionObserver from "@/hooks/useIntersectionObserver";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 import styled, { keyframes } from "styled-components";
 
 export default function Home() {
