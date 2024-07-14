@@ -5,6 +5,8 @@ import styled from "styled-components";
 import Header from "@/components/Header";
 
 const BestDochi = () => {
+  const [liked, setLiked] = useState(Array(10).fill(false));
+
   const top10Dochi = [
     {
       id: 1,
@@ -24,8 +26,16 @@ const BestDochi = () => {
       image: "/dochiLife/ex3.png",
       points: 105,
     },
-    // 나머지 고슴도치 데이터 추가
+    // ... 나머지 고슴도치 데이터 추가
   ];
+
+  const handleLikeClick = (index: number) => {
+    setLiked((prev) => {
+      const newLiked = [...prev];
+      newLiked[index] = !newLiked[index];
+      return newLiked;
+    });
+  };
 
   return (
     <BestDochiWrapper>
@@ -43,11 +53,19 @@ const BestDochi = () => {
                 ? "🥉"
                 : `#${index + 1}`}
             </Medal>
+            <DochiImageWrapper>
+              <DochiImage src={dochi.image} alt={dochi.name} />
+              {/* <LikeButton
+                liked={liked[index]}
+                onClick={() => handleLikeClick(index)}
+              >
+                {liked[index] ? "❤️" : "♡"}
+              </LikeButton> */}
+            </DochiImageWrapper>
             <DochiInfo>
               <DochiName>{dochi.name}</DochiName>
-              <DochiPoints>{dochi.points} 포인트</DochiPoints>
+              <DochiPoints>{dochi.points} 좋아요</DochiPoints>
             </DochiInfo>
-            <DochiImage src={dochi.image} alt={dochi.name} />
           </DochiCard>
         ))}
       </DochiGrid>
@@ -82,26 +100,25 @@ const Title = styled.div`
   padding-bottom: 30px;
 
   @media (max-width: 480px) {
-    font-size: 16px;
+    font-size: 20px;
     padding-bottom: 20px;
   }
 `;
 
 const DochiGrid = styled.div`
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 20px;
 `;
 
 const DochiCard = styled.div`
   background: #fff;
-  border-radius: 10px;
+  border-radius: 20px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  padding: 20px;
   transition: transform 0.3s, box-shadow 0.3s;
   cursor: pointer;
 
@@ -109,52 +126,77 @@ const DochiCard = styled.div`
     transform: translateY(-10px);
     box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
   }
-
-  @media (max-width: 480px) {
-    padding: 10px;
-  }
 `;
 
 const Medal = styled.div`
-  font-size: 80px;
+  font-size: 60px;
   font-weight: 800;
-  margin-right: 20px;
+  margin-top: 20px;
 
   @media (max-width: 480px) {
-    font-size: 60px;
+    font-size: 45px;
   }
+`;
+
+const DochiImageWrapper = styled.div`
+  position: relative;
+  width: 85%;
+  padding-top: 90%;
+  overflow: hidden;
+  border-radius: 20px;
+
+  @media (max-width: 480px) {
+  }
+`;
+
+const DochiImage = styled.img`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s;
 `;
 
 const DochiInfo = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  text-align: center;
 `;
 
 const DochiName = styled.div`
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 700;
   color: #333;
-  margin-bottom: 5px;
 
   @media (max-width: 480px) {
-    font-size: 16px;
+    font-size: 18px;
   }
 `;
 
 const DochiPoints = styled.div`
-  font-size: 18px;
+  font-size: 16px;
   color: #777;
+  padding-top: 15px;
 
   @media (max-width: 480px) {
-    font-size: 12px;
+    font-size: 14px;
   }
 `;
 
-const DochiImage = styled.img`
-  width: 150px;
-  height: 150px;
-  object-fit: cover;
-  margin-left: 20px;
-  border-radius: 10px;
+interface LikeButtonProps {
+  liked: boolean;
+}
+
+const LikeButton = styled.div<LikeButtonProps>`
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  font-size: 24px;
+  color: ${(props) => (props.liked ? "red" : "white")};
+  cursor: pointer;
+  transition: color 0.3s;
 `;
