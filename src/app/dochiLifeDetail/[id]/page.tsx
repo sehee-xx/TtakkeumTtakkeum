@@ -48,16 +48,6 @@ const DochiLifeDetail = () => {
     date: `2023-07-${index + 1}`,
   }));
 
-  const relatedCards = cardData.filter((card) => card.id !== id);
-
-  const handleRelatedCardClick = (id: number, title: string, image: string) => {
-    router.push(
-      `/dochiLifeDetail/${id}?title=${encodeURIComponent(
-        title
-      )}&image=${encodeURIComponent(image)}`
-    );
-  };
-
   const toggleLike = () => {
     setLiked((prev) => !prev);
   };
