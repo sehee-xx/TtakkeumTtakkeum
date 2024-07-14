@@ -28,7 +28,7 @@ const DochiLifeWrite = () => {
     try {
       console.log(process.env.BACKEND_HOSTNAME);
       const response = await axios.post(
-        `${process.env.BACKEND_HOSTNAME}/articles`,
+        `${process.env.NEXT_PUBLIC_BACKEND_HOSTNAME}/articles`,
         formData
       );
       console.log("글 작성 성공", response.data);
@@ -155,6 +155,10 @@ const Title = styled.h1`
   font-weight: 800;
   color: #58595b;
   padding-bottom: 0px;
+
+  @media (max-width: 480px) {
+    font-size: 16px;
+  }
 `;
 
 const Label = styled.label`
@@ -163,6 +167,10 @@ const Label = styled.label`
   display: flex;
   flex-direction: column;
   gap: 10px;
+
+  @media (max-width: 480px) {
+    font-size: 12px;
+  }
 `;
 
 const Input = styled.input`
@@ -170,6 +178,10 @@ const Input = styled.input`
   font-size: 16px;
   border: 1px solid #ccc;
   border-radius: 5px;
+
+  @media (max-width: 480px) {
+    font-size: 12px;
+  }
 `;
 
 const Textarea = styled.textarea`
@@ -178,6 +190,10 @@ const Textarea = styled.textarea`
   border: 1px solid #ccc;
   border-radius: 5px;
   resize: none;
+
+  @media (max-width: 480px) {
+    font-size: 12px;
+  }
 `;
 
 const ImagePreview = styled.img`
@@ -186,6 +202,10 @@ const ImagePreview = styled.img`
   height: auto;
   border: 1px solid #ccc;
   border-radius: 5px;
+
+  @media (max-width: 480px) {
+    font-size: 12px;
+  }
 `;
 
 const Button = styled.button`
@@ -206,6 +226,12 @@ const Button = styled.button`
   &:hover {
     background-color: #d3a179;
   }
+
+  @media (max-width: 480px) {
+    font-size: 16px;
+    width: 100px;
+    height: 40px;
+  }
 `;
 
 const HashtagInputWrapper = styled.div`
@@ -225,6 +251,10 @@ const AddHashtagButton = styled.button`
 
   &:hover {
     background-color: #d3a179;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 12px;
   }
 `;
 
