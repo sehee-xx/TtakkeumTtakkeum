@@ -134,9 +134,10 @@ const DochiLifeDetail = () => {
                 <Hashtag key={index}>{hashtag}</Hashtag>
               ))}
             </HashtagList>
-            <LikeButton onClick={toggleLike}>
-              {liked ? "좋아요 취소" : "좋아요"}
-            </LikeButton>
+            <LikeButton
+              onClick={toggleLike}
+              src={liked ? "/fillHeart.png" : "/emptyHeart.png"}
+            />
           </CardContent>
         </Card>
         <CommentSection>
@@ -216,6 +217,7 @@ const ContentWrapper = styled.div`
 `;
 
 const Card = styled.div`
+  position: relative;
   display: flex;
   flex-direction: row;
   width: 100%;
@@ -228,6 +230,10 @@ const Card = styled.div`
 
   @media (max-width: 768px) {
     flex-direction: column;
+  }
+
+  @media (max-width: 480px) {
+    border-radius: 30px;
   }
 `;
 
@@ -268,7 +274,7 @@ const TitleText = styled.div`
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
 
   @media (max-width: 480px) {
-    font-size: 24px;
+    font-size: 20px;
     padding-bottom: 10px;
     font-size: 20px;
   }
@@ -280,7 +286,7 @@ const DescriptionText = styled.div`
   line-height: 1.6;
 
   @media (max-width: 480px) {
-    font-size: 14px;
+    font-size: 12px;
   }
 `;
 
@@ -296,25 +302,29 @@ const Hashtag = styled.span`
   color: #ffffff;
   padding: 10px 10px;
   border-radius: 5px;
+
+  @media (max-width: 480px) {
+    font-size: 12px;
+  }
 `;
 
-const LikeButton = styled.div`
-  width: 100px;
-  height: 40px;
-  font-size: 16px;
-  font-weight: 700;
-  color: #ffffff;
-  background-color: #e5b080;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-top: 20px;
+const LikeButton = styled.img`
+  width: 32px;
+  height: 32px;
+  position: absolute;
+  top: 30px;
+  right: 30px;
 
-  &:hover {
-    background-color: #d3a179;
+  @media (max-width: 768px) {
+    width: 40px;
+    height: 40px;
+  }
+
+  @media (max-width: 768px) {
+    width: 30px;
+    height: 30px;
+    top: 20px;
+    right: 20px;
   }
 `;
 
@@ -325,6 +335,12 @@ const CommentSection = styled.div`
   border-radius: 10px;
   padding: 20px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+  @media (max-width: 480px) {
+    padding: 10px;
+    background-color: #fff;
+    box-shadow: none;
+  }
 `;
 
 const CommentForm = styled.form`
@@ -372,6 +388,10 @@ const Comment = styled.div`
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   position: relative;
   padding-bottom: 50px;
+
+  @media (max-width: 480px) {
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  }
 `;
 
 const CommentAuthor = styled.div`
