@@ -21,12 +21,15 @@ const DochiLifeWrite = () => {
     formData.append("title", title);
     formData.append("content", content);
     if (imageFile) {
-      formData.append("imageUrl", imageFile);
+      formData.append("image", imageFile);
     }
-    formData.append("hashtag", JSON.stringify(hashtags));
+
+    const hashtagsString = JSON.stringify(hashtags);
+    formData.append("hashtag", hashtagsString);
+    formData.append("authorId", "1");
 
     try {
-      console.log(process.env.BACKEND_HOSTNAME);
+      console.log(process.env.NEXT_PUBLIC_BACKEND_HOSTNAME);
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BACKEND_HOSTNAME}/articles`,
         formData
