@@ -161,6 +161,10 @@ const Title = styled.div`
   font-size: 24px;
   font-weight: 800;
   color: #58595b;
+
+  @media (max-width: 480px) {
+    font-size: 16px;
+  }
 `;
 
 const Question = styled.div`
@@ -170,6 +174,10 @@ const Question = styled.div`
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
+
+  @media (max-width: 480px) {
+    padding: 15px;
+  }
 `;
 
 const QuestionAuthor = styled.div`
@@ -177,6 +185,10 @@ const QuestionAuthor = styled.div`
   font-weight: 700;
   color: #58595b;
   margin-bottom: 5px;
+
+  @media (max-width: 480px) {
+    font-size: 12px;
+  }
 `;
 
 const QuestionText = styled.div`
@@ -184,11 +196,19 @@ const QuestionText = styled.div`
   font-weight: 700;
   color: #58595b;
   margin-bottom: 10px;
+
+  @media (max-width: 480px) {
+    font-size: 14px;
+  }
 `;
 
 const AnswerList = styled.div`
   margin-top: 10px;
   padding-left: 20px;
+
+  @media (max-width: 480px) {
+    padding-left: 10px;
+  }
 `;
 
 const Answer = styled.div`
@@ -197,6 +217,10 @@ const Answer = styled.div`
   border-radius: 5px;
   margin-bottom: 10px;
   color: #58595b;
+
+  @media (max-width: 480px) {
+    font-size: 14px;
+  }
 `;
 
 const AnswerAuthor = styled.div`
@@ -204,6 +228,10 @@ const AnswerAuthor = styled.div`
   font-weight: 700;
   color: #58595b;
   margin-bottom: 5px;
+
+  @media (max-width: 480px) {
+    font-size: 12px;
+  }
 `;
 
 const Form = styled.form`
@@ -216,12 +244,17 @@ const Textarea = styled.textarea`
   padding: 10px;
   font-size: 16px;
   border: 1px solid #ccc;
+  color: #58595b;
   border-radius: 5px;
   resize: none;
   width: 100%;
   height: 100px;
   box-sizing: border-box;
   resize: none;
+
+  @media (max-width: 480px) {
+    font-size: 12px;
+  }
 `;
 
 const Button = styled.button`
@@ -236,6 +269,11 @@ const Button = styled.button`
 
   &:hover {
     background-color: #d3a179;
+  }
+
+  @media (max-width: 480px) {
+    padding: 10px 10px;
+    font-size: 14px;
   }
 `;
 
@@ -255,6 +293,11 @@ const DivButton = styled.div`
   &:hover {
     background-color: #d3a179;
   }
+
+  @media (max-width: 480px) {
+    padding: 10px 10px;
+    font-size: 14px;
+  }
 `;
 
 const AnswerButton = styled.div`
@@ -272,5 +315,10 @@ const AnswerButton = styled.div`
 
   &:hover {
     background-color: #47a;
+  }
+
+  @media (max-width: 480px) {
+    padding: 10px 10px;
+    font-size: 12px;
   }
 `;
