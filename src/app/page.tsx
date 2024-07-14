@@ -108,6 +108,15 @@ const fadeIn = keyframes`
   }
 `;
 
+const scaleUp = keyframes`
+  from {
+    transform: scale(0.95);
+  }
+  to {
+    transform: scale(1);
+  }
+`;
+
 const Section = styled.section`
   scroll-snap-align: start;
   height: 100vh;
@@ -124,7 +133,7 @@ const Section = styled.section`
   &.visible {
     opacity: 1;
     transform: translateY(0);
-    animation: ${fadeIn} 0.5s ease-out;
+    animation: ${fadeIn} 0.5s ease-out, ${scaleUp} 0.5s ease-out;
   }
 
   @media (max-width: 1200px) {
@@ -153,6 +162,7 @@ const CardBig = styled.div`
   padding: 50px 50px;
   text-align: center;
   transition: transform 0.3s, box-shadow 0.3s;
+  animation: ${scaleUp} 0.5s ease-out;
 
   &:hover {
     transform: scale(1.05);
@@ -195,7 +205,9 @@ const SmallCard = styled.img`
   justify-content: center;
   padding: 15px;
   text-align: center;
+  transition: transform 0.3s;
   transform: rotate(${() => Math.random() * 10 - 5}deg);
+  animation: ${scaleUp} 0.5s ease-out;
 
   &:nth-child(even) {
     transform: rotate(${() => Math.random() * 10 - 5}deg) translateY(-10px);
@@ -206,7 +218,7 @@ const SmallCard = styled.img`
   }
 
   &:hover {
-    transform: scale(1.05);
+    transform: scale(1.05) !important;
     box-shadow: 0 8px 40px rgba(0, 0, 0, 0.2);
   }
 
