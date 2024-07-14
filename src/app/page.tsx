@@ -73,7 +73,7 @@ export default function Home() {
         </Section>
         <Section
           ref={ref3}
-          style={{ background: "linear-gradient(135deg,#E0FFE5, #F6FDEB)" }}
+          style={{ background: "linear-gradient(135deg,#F6FDEB, #E0FFE5)" }}
           className={isVisible3 ? "visible" : ""}
         >
           <CardBig onClick={onClickQnA}>
