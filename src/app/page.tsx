@@ -40,7 +40,7 @@ export default function Home() {
             </ImageWrapper>
             <CardText>
               <h2>내 고슴도치 자랑하기</h2>
-              <p>당신의 고슴도치를 자랑해보세요! 사진과 이야기를 공유하세요.</p>
+              <p>당신의 고슴도치를 자랑해보세요! 사진과 이야기를 공유하세요!</p>
             </CardText>
           </CardBig>
           <CardSmall>
@@ -66,8 +66,8 @@ export default function Home() {
               <img src="/MainCard/MainCard2.svg" alt="Hedgehog 2" />
             </ImageWrapper>
             <CardText>
-              <h2>금주의 고슴도치 픽하기</h2>
-              <p>이번 주 최고의 고슴도치를 선정해보세요!</p>
+              <h2>금주의 고슴도치 보기</h2>
+              <p>이번 주 최고의 고슴도치를 구경해보세요!</p>
             </CardText>
           </CardBig>
         </Section>
@@ -82,7 +82,7 @@ export default function Home() {
             </ImageWrapper>
             <CardText>
               <h2>정보 공유하기</h2>
-              <p>고슴도치에 대한 질문과 답변을 통해 정보를 공유해보세요.</p>
+              <p>고슴도치에 대한 질문과 답변을 통해 정보를 공유해보세요!</p>
             </CardText>
           </CardBig>
           <CardSmall>
