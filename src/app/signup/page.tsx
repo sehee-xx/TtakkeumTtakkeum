@@ -55,6 +55,10 @@ const SignupWrapper = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
+
+  @media (max-width: 480px) {
+    padding: 30px;
+  }
 `;
 
 const SignupBox = styled.div`
@@ -70,12 +74,25 @@ const SignupBox = styled.div`
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
+
+  @media (max-width: 480px) {
+    padding: 20px 20px;
+  }
 `;
 
 const SignupImg = styled.img`
   width: 300px;
   height: 300px;
   object-fit: cover;
+
+  @media (max-width: 480px) {
+    width: 150px;
+    height: 150px;
+  }
 `;
 
 const SignupText = styled.div`
@@ -85,6 +102,11 @@ const SignupText = styled.div`
   margin-top: 30px;
   margin-bottom: 20px;
   align-self: flex-start;
+
+  @media (max-width: 480px) {
+    font-size: 20px;
+    margin-bottom: 15px;
+  }
 `;
 
 const Input = styled.input`
@@ -102,6 +124,10 @@ const Input = styled.input`
   &::placeholder {
     color: #b3b3b3;
   }
+
+  @media (max-width: 480px) {
+    font-size: 16px;
+  }
 `;
 
 const SignupButton = styled.button`
@@ -117,5 +143,9 @@ const SignupButton = styled.button`
 
   &:hover {
     background-color: #d3a179;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 18px;
   }
 `;
