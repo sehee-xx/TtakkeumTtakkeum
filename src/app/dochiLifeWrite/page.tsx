@@ -24,7 +24,7 @@ const DochiLifeWrite = () => {
       formData.append("image", imageFile);
     }
 
-    const hashtagsString = JSON.stringify(hashtags);
+    const hashtagsString = hashtags.join(", ");
     formData.append("hashtag", hashtagsString);
     formData.append("authorId", "1");
 
@@ -32,7 +32,12 @@ const DochiLifeWrite = () => {
       console.log(process.env.NEXT_PUBLIC_BACKEND_HOSTNAME);
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BACKEND_HOSTNAME}/articles`,
-        formData
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
       );
       console.log("글 작성 성공", response.data);
       router.push("/dochiLife");
@@ -69,6 +74,8 @@ const DochiLifeWrite = () => {
   const handleRemoveHashtag = (tag: string) => {
     setHashtags(hashtags.filter((hashtag) => hashtag !== tag));
   };
+
+  console.log(hashtags);
 
   return (
     <WriteWrapper>
