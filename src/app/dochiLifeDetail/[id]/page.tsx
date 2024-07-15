@@ -7,6 +7,12 @@ import axios from "axios";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import styled from "styled-components";
 
+interface Comment {
+  id: number;
+  author: string;
+  content: string;
+}
+
 const DochiLifeDetail = () => {
   const router = useRouter();
   const pathname = usePathname();
@@ -20,34 +26,16 @@ const DochiLifeDetail = () => {
   const [hashtags, setHashtags] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [liked, setLiked] = useState(false);
-  const [comments, setComments] = useState([
-    {
-      id: 1,
-      author: "작성자1",
-      content: "댓글 내용 1",
-      replies: [
-        { id: 1, author: "작성자2", content: "답글 내용 1-1" },
-        { id: 2, author: "작성자3", content: "답글 내용 1-2" },
-      ],
-    },
-    {
-      id: 2,
-      author: "작성자4",
-      content: "댓글 내용 2",
-      replies: [],
-    },
-  ]);
+  const [comments, setComments] = useState<Comment[]>([]);
   const [commentInput, setCommentInput] = useState("");
-  const [replyInput, setReplyInput] = useState("");
-  const [selectedCommentId, setSelectedCommentId] = useState<number | null>(
-    null
-  );
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [newTitle, setNewTitle] = useState(initialTitle);
   const [newContent, setNewContent] = useState(content);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(initialImage);
   const [hashtagInput, setHashtagInput] = useState<string>("");
+  const [editCommentId, setEditCommentId] = useState<number | null>(null);
+  const [editCommentContent, setEditCommentContent] = useState<string>("");
 
   useEffect(() => {
     if (id) {
@@ -79,6 +67,13 @@ const DochiLifeDetail = () => {
       setNewTitle(response.data.title);
       setImagePreview(response.data.image || initialImage);
       setHashtags(response.data.hashtag);
+      setComments(
+        response.data.comments.map((comment: any) => ({
+          id: comment.id,
+          author: comment.user.nickname,
+          content: comment.content,
+        }))
+      );
       setLoading(false);
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
@@ -124,55 +119,102 @@ const DochiLifeDetail = () => {
     }
   };
 
-  const handleCommentSubmit = (event: React.FormEvent) => {
+  const handleCommentSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     if (commentInput.trim()) {
-      setComments([
-        ...comments,
-        {
-          id: comments.length + 1,
-          author: "새 작성자",
-          content: commentInput,
-          replies: [],
-        },
-      ]);
-      setCommentInput("");
+      try {
+        const token = localStorage.getItem("token");
+        const userNickname = JSON.parse(
+          localStorage.getItem("nickname") || "null"
+        );
+
+        if (!userNickname) {
+          console.error("닉네임을 불러오지 못했습니다.");
+          return;
+        }
+
+        const response = await axios.post(
+          `${process.env.NEXT_PUBLIC_BACKEND_HOSTNAME}/comments`,
+          { content: commentInput, articleId: Number(id), userId: 1 },
+          {
+            headers: {
+              "Content-Type": `application/json`,
+              "ngrok-skip-browser-warning": "69420",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        console.log("CommentPostRes", response.data);
+        // 댓글 등록이 성공하면 새로운 댓글을 상태에 추가
+        setComments((prevComments) => [
+          ...prevComments,
+          {
+            id: response.data.id,
+            author: userNickname,
+            content: commentInput,
+          },
+        ]);
+        setCommentInput("");
+      } catch (error) {
+        console.error("댓글 등록 실패", error);
+      }
     }
   };
 
-  const handleReplySubmit = (commentId: number) => {
-    if (replyInput.trim()) {
-      setComments(
-        comments.map((comment) =>
-          comment.id === commentId
-            ? {
-                ...comment,
-                replies: [
-                  ...comment.replies,
-                  {
-                    id: comment.replies.length + 1,
-                    author: "새 작성자",
-                    content: replyInput,
-                  },
-                ],
-              }
-            : comment
-        )
-      );
-      setReplyInput("");
-      setSelectedCommentId(null);
-    }
-  };
-
-  const handleDivClick = () => {
+  const handleDivClick = (event: React.FormEvent) => {
     const form = document.getElementById("commentForm") as HTMLFormElement;
     if (form) {
       form.requestSubmit();
     }
   };
 
-  const handleEditButtonClick = () => {
-    setIsEditModalOpen(true);
+  const handleEditButtonClick = (commentId: number, content: string) => {
+    setEditCommentId(commentId);
+    setEditCommentContent(content);
+  };
+
+  const handleEditCommentChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setEditCommentContent(event.target.value);
+  };
+
+  const handleEditCommentSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        router.push("/login");
+        return;
+      }
+
+      const response = await axios.patch(
+        `${process.env.NEXT_PUBLIC_BACKEND_HOSTNAME}/comments/${editCommentId}`,
+        { content: editCommentContent },
+        {
+          headers: {
+            "Content-Type": `application/json`,
+            "ngrok-skip-browser-warning": "69420",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        setComments((prevComments) =>
+          prevComments.map((comment) =>
+            comment.id === editCommentId
+              ? { ...comment, content: editCommentContent }
+              : comment
+          )
+        );
+        setEditCommentId(null);
+        setEditCommentContent("");
+      }
+    } catch (error) {
+      console.error("댓글 수정 실패", error);
+    }
   };
 
   const handleEditSubmit = async (event: React.FormEvent) => {
@@ -268,8 +310,6 @@ const DochiLifeDetail = () => {
     return <Loading />;
   }
 
-  console.log("hashtag", hashtags);
-
   return (
     <DochiLifeDetailWrapper>
       <Header />
@@ -289,7 +329,10 @@ const DochiLifeDetail = () => {
                 <Hashtag key={index}>#{hashtag}</Hashtag>
               ))}
             </HashtagList>
-            <EditButton src="/editIcon.png" onClick={handleEditButtonClick} />
+            <EditButton
+              src="/editIcon.png"
+              onClick={() => setIsEditModalOpen(true)}
+            />
             <DeleteButton
               src="/deleteIcon.png"
               onClick={handleDeleteButtonClick}
@@ -312,32 +355,29 @@ const DochiLifeDetail = () => {
           <CommentList>
             {comments.map((comment) => (
               <Comment key={comment.id}>
-                <CommentAuthor>{comment.author}</CommentAuthor>
-                <CommentContent>{comment.content}</CommentContent>
-                <ReplyList>
-                  {comment.replies.map((reply) => (
-                    <Reply key={reply.id}>
-                      <ReplyAuthor>{reply.author}</ReplyAuthor>
-                      <ReplyContent>{reply.content}</ReplyContent>
-                    </Reply>
-                  ))}
-                </ReplyList>
-                {selectedCommentId === comment.id ? (
-                  <ReplyForm onSubmit={(event) => event.preventDefault()}>
-                    <ReplyInput
-                      value={replyInput}
-                      onChange={(e) => setReplyInput(e.target.value)}
-                      placeholder="답글을 입력하세요..."
-                      required
+                {editCommentId === comment.id ? (
+                  <EditCommentForm onSubmit={handleEditCommentSubmit}>
+                    <EditCommentInput
+                      value={editCommentContent}
+                      onChange={handleEditCommentChange}
                     />
-                    <DivButton onClick={() => handleReplySubmit(comment.id)}>
-                      답글 달기
-                    </DivButton>
-                  </ReplyForm>
+                    <SaveCommentButton type="submit">수정</SaveCommentButton>
+                    <CancelEditButton onClick={() => setEditCommentId(null)}>
+                      취소
+                    </CancelEditButton>
+                  </EditCommentForm>
                 ) : (
-                  <ReplyButton onClick={() => setSelectedCommentId(comment.id)}>
-                    답글 달기
-                  </ReplyButton>
+                  <>
+                    <CommentEdit
+                      src="/editIcon.png"
+                      onClick={() =>
+                        handleEditButtonClick(comment.id, comment.content)
+                      }
+                    />
+                    <CommentDelete src="/deleteIcon.png" />
+                    <CommentAuthor>{comment.author}</CommentAuthor>
+                    <CommentContent>{comment.content}</CommentContent>
+                  </>
                 )}
               </Comment>
             ))}
@@ -654,16 +694,32 @@ const Comment = styled.div`
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   position: relative;
   padding-bottom: 50px;
+  box-sizing: border-box;
 
   @media (max-width: 480px) {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   }
 `;
 
+const CommentEdit = styled.img`
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  right: 40px;
+`;
+
+const CommentDelete = styled.img`
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  right: 15px;
+`;
+
 const CommentAuthor = styled.div`
   font-size: 14px;
   font-weight: 700;
   color: #333;
+  margin-bottom: 10px;
 `;
 
 const CommentContent = styled.div`
@@ -672,46 +728,21 @@ const CommentContent = styled.div`
   margin-top: 5px;
 `;
 
-const ReplyList = styled.div`
-  margin-top: 10px;
-  padding-left: 20px;
-`;
-
-const Reply = styled.div`
-  background: #f0f0f0;
-  padding: 10px;
-  border-radius: 5px;
-  margin-bottom: 10px;
-`;
-
-const ReplyAuthor = styled.div`
-  font-size: 14px;
-  font-weight: 700;
-  color: #333;
-`;
-
-const ReplyContent = styled.div`
-  font-size: 16px;
-  color: #555;
-  margin-top: 5px;
-`;
-
-const ReplyForm = styled.form`
+const EditCommentForm = styled.form`
   display: flex;
   flex-direction: column;
   gap: 10px;
-  margin-top: 10px;
+  width: 100%;
 `;
 
-const ReplyInput = styled.textarea`
+const EditCommentInput = styled.input`
   padding: 10px;
   font-size: 16px;
   border: 1px solid #ccc;
   border-radius: 5px;
-  resize: none;
 `;
 
-const DivButton = styled.div`
+const SaveCommentButton = styled.button`
   padding: 10px 20px;
   font-size: 16px;
   font-weight: 700;
@@ -729,23 +760,21 @@ const DivButton = styled.div`
   }
 `;
 
-const ReplyButton = styled.div`
+const CancelEditButton = styled.button`
   padding: 10px 20px;
   font-size: 16px;
   font-weight: 700;
   color: #ffffff;
-  background-color: #5a9;
+  background-color: #e5b080;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  margin-top: 10px;
-  width: fit-content;
-  position: absolute;
-  right: 10px;
-  bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   &:hover {
-    background-color: #47a;
+    background-color: #d3a179;
   }
 `;
 
