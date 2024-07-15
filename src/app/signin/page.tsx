@@ -2,11 +2,19 @@
 
 import Header from "@/components/Header";
 import Loading from "@/components/Loading";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
 
 const Signin = () => {
   const [loading, setLoading] = useState(true);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const router = useRouter();
+  const MySwal = withReactContent(Swal);
 
   useEffect(() => {
     const handleLoad = () => {
@@ -25,15 +33,96 @@ const Signin = () => {
     return <Loading />;
   }
 
+  const onClickSignin = async () => {
+    try {
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_BACKEND_HOSTNAME}/auth/login`,
+        {
+          email,
+          password,
+        }
+      );
+      console.log(response.data);
+      localStorage.setItem("token", response.data.accessToken);
+      if (window.innerWidth <= 768) {
+        MySwal.fire({
+          icon: "success",
+          title: "로그인 성공",
+          toast: true,
+          position: "top-end",
+          showConfirmButton: false,
+          timer: 1000,
+          customClass: {
+            popup: "swal-custom-popup",
+            title: "swal-custom-title",
+            htmlContainer: "swal-custom-html-container",
+          },
+        });
+      } else {
+        MySwal.fire({
+          icon: "success",
+          title: "로그인 성공",
+          confirmButtonText: "확인",
+          confirmButtonColor: "#d3a179",
+          customClass: {
+            popup: "swal-custom-popup",
+            title: "swal-custom-title",
+            htmlContainer: "swal-custom-html-container",
+          },
+        });
+      }
+      router.push("/");
+    } catch (error) {
+      console.error("로그인 실패", error);
+      if (window.innerWidth <= 768) {
+        MySwal.fire({
+          icon: "error",
+          title: "로그인 실패",
+          text: "로그인 정보를 다시 확인해주세요!",
+          toast: true,
+          position: "top-end",
+          showConfirmButton: false,
+          timer: 1000,
+          customClass: {
+            popup: "swal-custom-popup",
+            title: "swal-custom-title",
+            htmlContainer: "swal-custom-html-container",
+          },
+        });
+      } else {
+        MySwal.fire({
+          icon: "error",
+          title: "로그인 실패",
+          text: "로그인 정보를 다시 확인해주세요!",
+          confirmButtonText: "확인",
+          confirmButtonColor: "#d3a179",
+          customClass: {
+            popup: "swal-custom-popup",
+            title: "swal-custom-title",
+            htmlContainer: "swal-custom-html-container",
+          },
+        });
+      }
+    }
+  };
+
   return (
     <SigninWrapper>
       <Header />
       <SigninBox>
         <SigninImg src="/Signin.svg" />
         <SiginText>로그인</SiginText>
-        <Input placeholder="아이디를 입력해주세요" />
-        <Input placeholder="비밀번호를 입력해주세요" />
-        <SigninButton>로그인</SigninButton>
+        <Input
+          placeholder="이메일을 입력해주세요"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <Input
+          placeholder="비밀번호를 입력해주세요"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <SigninButton onClick={onClickSignin}>로그인</SigninButton>
       </SigninBox>
     </SigninWrapper>
   );
