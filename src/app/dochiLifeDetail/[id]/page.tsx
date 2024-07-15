@@ -1,17 +1,24 @@
 "use client";
 
+import React, { useEffect, useState } from "react";
 import Header from "@/components/Header";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import Loading from "@/components/Loading";
+import axios from "axios";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import styled from "styled-components";
 
 const DochiLifeDetail = () => {
   const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
-  const title = searchParams.get("title") || "제목 없음";
-  const image = searchParams.get("image") || "/loading.svg";
-  const id = parseInt(searchParams.get("id") || "0", 10);
 
+  const id = pathname.split("/").pop() || "0";
+  const initialTitle = searchParams.get("title") || "제목 없음";
+  const initialImage = searchParams.get("image") || "/loading.svg";
+
+  const [content, setContent] = useState("");
+  const [hashtags, setHashtags] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
   const [liked, setLiked] = useState(false);
   const [comments, setComments] = useState([
     {
@@ -35,21 +42,86 @@ const DochiLifeDetail = () => {
   const [selectedCommentId, setSelectedCommentId] = useState<number | null>(
     null
   );
-  const [hashtags, setHashtags] = useState<string[]>([
-    "#고슴도치",
-    "#일상",
-    "#애완동물",
-  ]);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [newTitle, setNewTitle] = useState(initialTitle);
+  const [newContent, setNewContent] = useState(content);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(initialImage);
+  const [hashtagInput, setHashtagInput] = useState<string>("");
 
-  const cardData = Array.from({ length: 25 }, (_, index) => ({
-    id: index + 1,
-    image: `/dochiLife/ex${index + 1}.png`,
-    title: `도치의 일상 ${index + 1}`,
-    date: `2023-07-${index + 1}`,
-  }));
+  useEffect(() => {
+    if (id) {
+      fetchCard();
+    }
+  }, [id]);
 
-  const toggleLike = () => {
-    setLiked((prev) => !prev);
+  const fetchCard = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        router.push("/login");
+        return;
+      }
+
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_BACKEND_HOSTNAME}/articles/${id}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "ngrok-skip-browser-warning": "69420",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log("resData", response.data);
+      setContent(response.data.content);
+      setNewContent(response.data.content);
+      setNewTitle(response.data.title);
+      setImagePreview(response.data.image || initialImage);
+      setHashtags(response.data.hashtag);
+      setLoading(false);
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        console.error("카드 데이터를 불러오지 못했습니다.", error);
+        if (error.response && error.response.status === 401) {
+          router.push("/login");
+        }
+      } else {
+        console.error("알 수 없는 오류가 발생했습니다.", error);
+      }
+      setLoading(false);
+    }
+  };
+
+  const toggleLike = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        router.push("/login");
+        return;
+      }
+
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_BACKEND_HOSTNAME}/articles/${id}/like`,
+        { like: !liked },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "ngrok-skip-browser-warning": "69420",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.status === 200) {
+        setLiked((prev) => !prev);
+      }
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        console.error("좋아요 요청을 처리하지 못했습니다.", error);
+      } else {
+        console.error("알 수 없는 오류가 발생했습니다.", error);
+      }
+    }
   };
 
   const handleCommentSubmit = (event: React.FormEvent) => {
@@ -99,31 +171,129 @@ const DochiLifeDetail = () => {
     }
   };
 
+  const handleEditButtonClick = () => {
+    setIsEditModalOpen(true);
+  };
+
+  const handleEditSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        router.push("/login");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("title", newTitle);
+      formData.append("content", newContent);
+      if (imageFile) {
+        formData.append("image", imageFile);
+      }
+      formData.append("hashtag", hashtags.join(","));
+
+      const response = await axios.patch(
+        `${process.env.NEXT_PUBLIC_BACKEND_HOSTNAME}/articles/${id}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            "ngrok-skip-browser-warning": "69420",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.status === 200) {
+        setContent(newContent);
+        setNewTitle(newTitle);
+        setIsEditModalOpen(false);
+        fetchCard(); // 수정 후 데이터를 다시 불러옴
+      }
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        console.error("수정 요청을 처리하지 못했습니다.", error);
+      } else {
+        console.error("알 수 없는 오류가 발생했습니다.", error);
+      }
+    }
+  };
+
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
+
+  const handleHashtagInputChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setHashtagInput(event.target.value);
+  };
+
+  const handleAddHashtag = () => {
+    if (hashtagInput.trim() && !hashtags.includes(hashtagInput.trim())) {
+      if (hashtags.length < 5) {
+        setHashtags([...hashtags, hashtagInput.trim()]);
+      } else {
+        alert("해시태그는 최대 5개까지 추가할 수 있습니다.");
+      }
+      setHashtagInput("");
+    }
+  };
+
+  const handleRemoveHashtag = (tag: string) => {
+    setHashtags(hashtags.filter((hashtag) => hashtag !== tag));
+  };
+
+  const handleDeleteButtonClick = async () => {
+    try {
+      const response = await axios.delete(
+        `${process.env.NEXT_PUBLIC_BACKEND_HOSTNAME}/articles/${id}`,
+        {
+          headers: {
+            "Content-Type": `application/json`,
+            "ngrok-skip-browser-warning": "69420",
+          },
+        }
+      );
+      router.push("/dochiLife");
+    } catch (error) {
+      console.error("삭제 실패", error);
+    }
+  };
+
+  if (loading) {
+    return <Loading />;
+  }
+
+  console.log("hashtag", hashtags);
+
   return (
     <DochiLifeDetailWrapper>
       <Header />
       <ContentWrapper>
         <Card>
           <CardImageWrapper>
-            <DetailImage src={image} alt={title} />
+            <DetailImage
+              src={imagePreview || "/loading.svg"}
+              alt={newTitle || "제목 없음"}
+            />
           </CardImageWrapper>
           <CardContent>
-            <TitleText>{title}</TitleText>
-            <DescriptionText>
-              넓은 의미로는 고슴도치아과(Erinaceinae)에 속한 포유류의 총칭이고,
-              좁게는 국내 서식종인 고슴도치(Amur hedgehog, Erinaceus
-              amurensis)를 가리킨다. 국내 서식종 기준으로 자연 서식지는 러시아
-              아무르와 연해주, 중국 중앙부에서 동부(남부 해안가와 북부 제외),
-              만주, 한반도 등지이다. 애완동물로 기르는 종은 한국 고슴도치가
-              아니라 아프리카산의 네발가락고슴도치(Four-toed hedgehog, Atelerix
-              albiventris)와 알제리고슴도치(Algerian hedgehog, A. algirus)의
-              교배종이다.
-            </DescriptionText>
+            <TitleText>{newTitle || "제목 없음"}</TitleText>
+            <DescriptionText>{content}</DescriptionText>
             <HashtagList>
               {hashtags.map((hashtag, index) => (
-                <Hashtag key={index}>{hashtag}</Hashtag>
+                <Hashtag key={index}>#{hashtag}</Hashtag>
               ))}
             </HashtagList>
+            <EditButton src="/editIcon.png" onClick={handleEditButtonClick} />
+            <DeleteButton
+              src="/deleteIcon.png"
+              onClick={handleDeleteButtonClick}
+            />
             <LikeButton
               onClick={toggleLike}
               src={liked ? "/fillHeart.png" : "/emptyHeart.png"}
@@ -174,6 +344,61 @@ const DochiLifeDetail = () => {
           </CommentList>
         </CommentSection>
       </ContentWrapper>
+      {isEditModalOpen && (
+        <EditModal>
+          <EditForm onSubmit={handleEditSubmit}>
+            <EditLabel>
+              제목
+              <EditInput
+                type="text"
+                value={newTitle}
+                onChange={(e) => setNewTitle(e.target.value)}
+              />
+            </EditLabel>
+            <EditLabel>
+              내용
+              <EditTextarea
+                rows={10}
+                value={newContent}
+                onChange={(e) => setNewContent(e.target.value)}
+              />
+            </EditLabel>
+            <EditLabel>
+              이미지 업로드
+              <EditInput
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+              />
+            </EditLabel>
+            {imagePreview && (
+              <ImagePreview src={imagePreview} alt="Image preview" />
+            )}
+            <EditLabel>
+              해시태그
+              <HashtagInputWrapper>
+                <EditInput
+                  type="text"
+                  value={hashtagInput}
+                  onChange={handleHashtagInputChange}
+                  placeholder="해시태그를 입력하세요"
+                />
+                <AddHashtagButton type="button" onClick={handleAddHashtag}>
+                  추가
+                </AddHashtagButton>
+              </HashtagInputWrapper>
+              <HashtagList>
+                {hashtags.map((tag, index) => (
+                  <Hashtag key={index} onClick={() => handleRemoveHashtag(tag)}>
+                    #{tag}
+                  </Hashtag>
+                ))}
+              </HashtagList>
+            </EditLabel>
+            <Button type="submit">수정 완료</Button>
+          </EditForm>
+        </EditModal>
+      )}
     </DochiLifeDetailWrapper>
   );
 };
@@ -231,6 +456,7 @@ const CardImageWrapper = styled.div`
   width: 50%;
   height: auto;
   overflow: hidden;
+  padding: 30px;
 
   @media (max-width: 768px) {
     width: 100%;
@@ -257,14 +483,14 @@ const CardContent = styled.div`
 `;
 
 const TitleText = styled.div`
-  font-size: 32px;
+  font-size: 28px;
   font-weight: 800;
-  color: #333;
+  color: #58595b;
   padding-bottom: 20px;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
 
   @media (max-width: 480px) {
-    font-size: 20px;
+    font-size: 16px;
     padding-bottom: 10px;
     font-size: 20px;
   }
@@ -272,7 +498,7 @@ const TitleText = styled.div`
 
 const DescriptionText = styled.div`
   font-size: 18px;
-  color: #555;
+  color: #58595b;
   line-height: 1.6;
 
   @media (max-width: 480px) {
@@ -292,29 +518,78 @@ const Hashtag = styled.span`
   color: #ffffff;
   padding: 10px 10px;
   border-radius: 5px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #d3a179;
+  }
 
   @media (max-width: 480px) {
     font-size: 12px;
   }
 `;
 
+const EditButton = styled.img`
+  width: 26px;
+  height: 26px;
+  position: absolute;
+  top: 30px;
+  right: 70px;
+
+  @media (max-width: 768px) {
+    width: 24px;
+    height: 24px;
+  }
+
+  @media (max-width: 480px) {
+    top: 20px;
+    right: 50px;
+    width: 20px;
+    height: 20px;
+  }
+
+  &:hover {
+    cursor: pointer;
+  }
+`;
+
+const DeleteButton = styled.img`
+  width: 26px;
+  height: 26px;
+  position: absolute;
+  top: 30px;
+  right: 110px;
+
+  @media (max-width: 768px) {
+    width: 24px;
+    height: 24px;
+  }
+
+  @media (max-width: 480px) {
+    top: 20px;
+    right: 80px;
+    width: 20px;
+    height: 20px;
+  }
+`;
+
 const LikeButton = styled.img`
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   position: absolute;
   top: 30px;
   right: 30px;
 
   @media (max-width: 768px) {
-    width: 40px;
-    height: 40px;
+    width: 26px;
+    height: 26px;
   }
 
-  @media (max-width: 768px) {
-    width: 30px;
-    height: 30px;
+  @media (max-width: 480px) {
     top: 20px;
     right: 20px;
+    width: 20px;
+    height: 20px;
   }
 `;
 
@@ -325,6 +600,7 @@ const CommentSection = styled.div`
   border-radius: 10px;
   padding: 20px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
 
   @media (max-width: 480px) {
     padding: 10px;
@@ -470,5 +746,130 @@ const ReplyButton = styled.div`
 
   &:hover {
     background-color: #47a;
+  }
+`;
+
+const EditModal = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  overflow: auto;
+`;
+
+const EditForm = styled.form`
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 90%;
+  max-width: 500px;
+  margin: 20px;
+  margin-top: calc(12vh + 20px);
+  box-sizing: border-box;
+`;
+
+const EditLabel = styled.label`
+  font-size: 16px;
+  color: #58595b;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  @media (max-width: 480px) {
+    font-size: 12px;
+  }
+`;
+
+const EditInput = styled.input`
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+
+  @media (max-width: 480px) {
+    font-size: 12px;
+  }
+`;
+
+const EditTextarea = styled.textarea`
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  resize: none;
+
+  @media (max-width: 480px) {
+    font-size: 12px;
+  }
+`;
+
+const ImagePreview = styled.img`
+  width: 100%;
+  max-width: 150px;
+  height: auto;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+
+  @media (max-width: 480px) {
+    font-size: 12px;
+  }
+`;
+
+const HashtagInputWrapper = styled.div`
+  display: flex;
+  gap: 10px;
+`;
+
+const AddHashtagButton = styled.button`
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #ffffff;
+  background-color: #e5b080;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #d3a179;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 12px;
+  }
+`;
+
+const Button = styled.button`
+  width: 120px;
+  height: 50px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #ffffff;
+  background-color: #e5b080;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 5px;
+  align-self: flex-end;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #d3a179;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 16px;
+    width: 100px;
+    height: 40px;
   }
 `;
