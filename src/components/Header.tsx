@@ -1,9 +1,18 @@
 import { useRouter, usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 
 const Header = () => {
   const router = useRouter();
   const pathname = usePathname();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      setIsLoggedIn(true);
+    }
+  }, []);
 
   const onClickLogo = () => {
     router.push("/");
@@ -48,12 +57,22 @@ const Header = () => {
         >
           금주의 도치 보기
         </ShowGeumchi>
-        <MenuText onClick={onClickSignin} active={pathname.includes("/signin")}>
-          로그인
-        </MenuText>
-        <MenuText onClick={onClickSignup} active={pathname.includes("/signup")}>
-          회원가입
-        </MenuText>
+        {!isLoggedIn && (
+          <>
+            <MenuText
+              onClick={onClickSignin}
+              active={pathname.includes("/signin")}
+            >
+              로그인
+            </MenuText>
+            <MenuText
+              onClick={onClickSignup}
+              active={pathname.includes("/signup")}
+            >
+              회원가입
+            </MenuText>
+          </>
+        )}
       </HeaderMenu>
     </HeaderWrapper>
   );
