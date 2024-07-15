@@ -306,6 +306,29 @@ const DochiLifeDetail = () => {
     }
   };
 
+  const handleDeleteComment = async (commentId: number) => {
+    try {
+      const response = await axios.delete(
+        `${process.env.NEXT_PUBLIC_BACKEND_HOSTNAME}/comments/${commentId}`,
+
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            "ngrok-skip-browser-warning": "69420",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      if (response.status === 200) {
+        setComments((prevComments) =>
+          prevComments.filter((comment) => comment.id !== commentId)
+        );
+      }
+    } catch (error) {
+      console.error("댓글 삭제 실패", error);
+    }
+  };
+
   if (loading) {
     return <Loading />;
   }
@@ -374,7 +397,10 @@ const DochiLifeDetail = () => {
                         handleEditButtonClick(comment.id, comment.content)
                       }
                     />
-                    <CommentDelete src="/deleteIcon.png" />
+                    <CommentDelete
+                      src="/deleteIcon.png"
+                      onClick={() => handleDeleteComment(comment.id)}
+                    />
                     <CommentAuthor>{comment.author}</CommentAuthor>
                     <CommentContent>{comment.content}</CommentContent>
                   </>
