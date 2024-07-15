@@ -31,11 +31,12 @@ const GameOverText = styled.div`
   color: brown;
 `;
 
-const LivesText = styled.div`
+const LifeText = styled.div`
   position: absolute;
-  top: 20px;
-  left: 20px;
+  top: 160px;
+  right: 200px;
   font-size: 24px;
+  color: #58595b;
   font-weight: bold;
 `;
 
@@ -48,7 +49,7 @@ const ScoreText = styled.div`
   font-weight: bold;
 `;
 
-const RestartButton = styled.button`
+const RestartButton = styled.div`
   position: absolute;
   top: 45%;
   left: 50%;
@@ -174,7 +175,7 @@ const Game: React.FC = () => {
 
   return (
     <GameWrapper ref={gameRef}>
-      <LivesText>Lives: {lives}</LivesText>
+      <LifeText>Life: {lives}</LifeText>
       <ScoreText>Score: {score}</ScoreText>
       {gameOver && (
         <>
