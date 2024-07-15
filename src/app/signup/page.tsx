@@ -2,11 +2,22 @@
 
 import Header from "@/components/Header";
 import Loading from "@/components/Loading";
+import axios from "axios";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
+import withReactContent from "sweetalert2-react-content";
+import Swal from "sweetalert2";
+import { useRouter } from "next/navigation";
 
 const Signup = () => {
   const [loading, setLoading] = useState(true);
+  const [nickname, setNickname] = useState(""); // 닉네임
+  const [dochiname, setDochiname] = useState(""); // 고슴도치 이름
+  const [email, setEmail] = useState(""); // 이메일
+  const [password, setPassword] = useState(""); // 비밀번호
+  const [confirmPassword, setConfirmPassword] = useState(""); // 비밀번호 확인
+  const router = useRouter();
+  const MySwal = withReactContent(Swal);
 
   useEffect(() => {
     const handleLoad = () => {
@@ -25,18 +36,89 @@ const Signup = () => {
     return <Loading />;
   }
 
+  const onClickSignup = async () => {
+    if (password !== confirmPassword) {
+      if (window.innerWidth <= 768) {
+        MySwal.fire({
+          icon: "error",
+          title: "비밀번호 오류",
+          text: "비밀번호를 다시 확인해주세요!",
+          toast: true,
+          position: "top-end",
+          showConfirmButton: false,
+          timer: 1000,
+          customClass: {
+            popup: "swal-custom-popup",
+            title: "swal-custom-title",
+            htmlContainer: "swal-custom-html-container",
+          },
+        });
+      } else {
+        MySwal.fire({
+          icon: "error",
+          title: "비밀번호 오류",
+          text: "비밀번호를 다시 확인해주세요!",
+          confirmButtonText: "확인",
+          confirmButtonColor: "#d3a179",
+          customClass: {
+            popup: "swal-custom-popup",
+            title: "swal-custom-title",
+            htmlContainer: "swal-custom-html-container",
+          },
+        });
+      }
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_BACKEND_HOSTNAME}/users`,
+        {
+          nickname,
+          dochiname,
+          email,
+          password,
+        }
+      );
+      console.log(response.data);
+      router.push("/signin");
+    } catch (error) {
+      console.error("회원가입 실패", error);
+    }
+  };
+
   return (
     <SignupWrapper>
       <Header />
       <SignupBox>
         <SignupImg src="/Signup.svg" />
         <SignupText>회원가입</SignupText>
-        <Input placeholder="닉네임을 입력해주세요" />
-        <Input placeholder="고슴도치의 이름을 입력해주세요" />
-        <Input placeholder="아이디를 입력해주세요" />
-        <Input placeholder="비밀번호를 입력해주세요" />
-        <Input placeholder="비밀번호를 다시 입력해주세요" />
-        <SignupButton>회원가입</SignupButton>
+        <Input
+          placeholder="닉네임을 입력해주세요"
+          value={nickname}
+          onChange={(e) => setNickname(e.target.value)}
+        />
+        <Input
+          placeholder="고슴도치의 이름을 입력해주세요"
+          value={dochiname}
+          onChange={(e) => setDochiname(e.target.value)}
+        />
+        <Input
+          placeholder="이메일을 입력해주세요"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <Input
+          placeholder="비밀번호를 입력해주세요"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <Input
+          placeholder="비밀번호를 다시 입력해주세요"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+        />
+        <SignupButton onClick={onClickSignup}>회원가입</SignupButton>
       </SignupBox>
     </SignupWrapper>
   );
