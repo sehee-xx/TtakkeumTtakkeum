@@ -1,17 +1,24 @@
 "use client";
 
 import Header from "@/components/Header";
+import Loading from "@/components/Loading";
+import axios from "axios";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
+
+interface CardData {
+  id: number;
+  image: string;
+  title: string;
+  date: string;
+}
 
 const DochiLife = () => {
   const router = useRouter();
-  const cardData = Array.from({ length: 25 }, (_, index) => ({
-    id: index + 1,
-    image: `/dochiLife/ex${index + 1}.png`,
-    title: `도치의 일상 ${index + 1}`,
-    date: `2023-07-${index + 1}`,
-  }));
+  const [cardData, setCardData] = useState<CardData[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<null | string>(null);
 
   const handleCardClick = (id: number, title: string, image: string) => {
     router.push(
@@ -21,9 +28,49 @@ const DochiLife = () => {
     );
   };
 
+  const fetchCardData = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_BACKEND_HOSTNAME}/articles`,
+        {
+          headers: {
+            "Content-Type": `application/json`,
+            "ngrok-skip-browser-warning": "69420",
+          },
+        }
+      );
+      console.log("resData", response);
+      if (Array.isArray(response.data)) {
+        setCardData(response.data);
+      } else {
+        console.error("Unexpected response data format:", response.data);
+        setCardData([]);
+      }
+      setLoading(false);
+    } catch (error) {
+      console.error("카드 데이터를 불러오지 못했습니다.", error);
+      setError("카드 데이터를 불러오지 못했습니다.");
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCardData();
+  }, []);
+
   const handleWriteClick = () => {
     router.push("/dochiLifeWrite");
   };
+
+  if (loading) {
+    return <Loading />;
+  }
+
+  if (error) {
+    return <p>{error}</p>;
+  }
+
+  console.log(cardData);
 
   return (
     <DochiLifeWrapper>
@@ -31,21 +78,25 @@ const DochiLife = () => {
       <TitleText>[ 도치의 일상 ]</TitleText>
       <WriteButton onClick={handleWriteClick}>작성하기</WriteButton>
       <CardGrid>
-        {cardData.map((card) => (
-          <Card
-            key={card.id}
-            onClick={() => handleCardClick(card.id, card.title, card.image)}
-          >
-            <CardImageWrapper>
-              <CardImage src={card.image} alt={card.title} />
-              <CardOverlay />
-            </CardImageWrapper>
-            <CardContent>
-              <CardTitle>{card.title}</CardTitle>
-              <CardDate>{card.date}</CardDate>
-            </CardContent>
-          </Card>
-        ))}
+        {Array.isArray(cardData) && cardData.length > 0 ? (
+          cardData.map((card) => (
+            <Card
+              key={card.id}
+              onClick={() => handleCardClick(card.id, card.title, card.image)}
+            >
+              <CardImageWrapper>
+                <CardImage src={card.image} alt={card.title} />
+                <CardOverlay />
+              </CardImageWrapper>
+              <CardContent>
+                <CardTitle>{card.title}</CardTitle>
+                <CardDate>{card.date}</CardDate>
+              </CardContent>
+            </Card>
+          ))
+        ) : (
+          <p>No cards available</p>
+        )}
       </CardGrid>
     </DochiLifeWrapper>
   );
@@ -194,7 +245,7 @@ const CardContent = styled.div`
 const CardTitle = styled.div`
   font-size: 20px;
   font-weight: 700;
-  color: #333;
+  color: #58595b;
   margin-bottom: 10px;
   transition: color 0.3s;
 
