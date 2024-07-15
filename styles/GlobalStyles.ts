@@ -7,6 +7,7 @@ const GlobalStyle = createGlobalStyle`
     src: url('/fonts/MangoDdobak-B.otf') format('opentype');
     font-weight: bold;
     font-style: normal;
+    font-display: swap;
   }
 
   @font-face {
@@ -14,6 +15,7 @@ const GlobalStyle = createGlobalStyle`
     src: url('/fonts/MangoDdobak-R.otf') format('opentype');
     font-weight: normal;
     font-style: normal;
+    font-display: swap;
   }
 
   @font-face {
@@ -21,6 +23,7 @@ const GlobalStyle = createGlobalStyle`
     src: url('/fonts/MangoDdobak-L.otf') format('opentype');
     font-weight: 300;
     font-style: normal;
+    font-display: swap;
   }
 
   body {
