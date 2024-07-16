@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import React, { useEffect, useState } from "react";
-import Header from "@/components/Header";
-import Loading from "@/components/Loading";
-import axios from "axios";
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import styled from "styled-components";
+import React, { useEffect, useState } from 'react';
+import Header from '@/components/Header';
+import Loading from '@/components/Loading';
+import axios from 'axios';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import styled from 'styled-components';
 
 interface Comment {
   id: number;
@@ -18,24 +18,24 @@ const DochiLifeDetail = () => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const id = pathname.split("/").pop() || "0";
-  const initialTitle = searchParams.get("title") || "제목 없음";
-  const initialImage = searchParams.get("image") || "/loading.svg";
+  const id = pathname.split('/').pop() || '0';
+  const initialTitle = searchParams.get('title') || '제목 없음';
+  const initialImage = searchParams.get('image') || '/loading.svg';
 
-  const [content, setContent] = useState("");
+  const [content, setContent] = useState('');
   const [hashtags, setHashtags] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [liked, setLiked] = useState(false);
   const [comments, setComments] = useState<Comment[]>([]);
-  const [commentInput, setCommentInput] = useState("");
+  const [commentInput, setCommentInput] = useState('');
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [newTitle, setNewTitle] = useState(initialTitle);
   const [newContent, setNewContent] = useState(content);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(initialImage);
-  const [hashtagInput, setHashtagInput] = useState<string>("");
+  const [hashtagInput, setHashtagInput] = useState<string>('');
   const [editCommentId, setEditCommentId] = useState<number | null>(null);
-  const [editCommentContent, setEditCommentContent] = useState<string>("");
+  const [editCommentContent, setEditCommentContent] = useState<string>('');
   const [isProcessingLike, setIsProcessingLike] = useState(false);
 
   useEffect(() => {
@@ -46,9 +46,9 @@ const DochiLifeDetail = () => {
 
   const fetchCard = async () => {
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem('token');
       if (!token) {
-        router.push("/login");
+        router.push('/signin');
         return;
       }
 
@@ -56,13 +56,13 @@ const DochiLifeDetail = () => {
         `${process.env.NEXT_PUBLIC_BACKEND_HOSTNAME}/articles/${id}`,
         {
           headers: {
-            "Content-Type": "application/json",
-            "ngrok-skip-browser-warning": "69420",
+            'Content-Type': 'application/json',
+            'ngrok-skip-browser-warning': '69420',
             Authorization: `Bearer ${token}`,
           },
         }
       );
-      console.log("resData", response.data);
+      console.log('resData', response.data);
       setContent(response.data.content);
       setNewContent(response.data.content);
       setNewTitle(response.data.title);
@@ -79,12 +79,12 @@ const DochiLifeDetail = () => {
       setLoading(false);
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
-        console.error("카드 데이터를 불러오지 못했습니다.", error);
+        console.error('카드 데이터를 불러오지 못했습니다.', error);
         if (error.response && error.response.status === 401) {
-          router.push("/login");
+          router.push('/signin');
         }
       } else {
-        console.error("알 수 없는 오류가 발생했습니다.", error);
+        console.error('알 수 없는 오류가 발생했습니다.', error);
       }
       setLoading(false);
     }
@@ -98,21 +98,21 @@ const DochiLifeDetail = () => {
     setIsProcessingLike(true);
 
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem('token');
       if (!token) {
-        router.push("/login");
+        router.push('/signin');
         return;
       }
 
       const url = `${process.env.NEXT_PUBLIC_BACKEND_HOSTNAME}/articles/${id}/like`;
-      const method = liked ? "delete" : "post";
+      const method = liked ? 'delete' : 'post';
 
       const response = await axios({
         method: method,
         url: url,
         headers: {
-          "Content-Type": "application/json",
-          "ngrok-skip-browser-warning": "69420",
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': '69420',
           Authorization: `Bearer ${token}`,
         },
       });
@@ -122,9 +122,9 @@ const DochiLifeDetail = () => {
       }
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
-        console.error("좋아요 요청을 처리하지 못했습니다.", error);
+        console.error('좋아요 요청을 처리하지 못했습니다.', error);
       } else {
-        console.error("알 수 없는 오류가 발생했습니다.", error);
+        console.error('알 수 없는 오류가 발생했습니다.', error);
       }
     } finally {
       setIsProcessingLike(false);
@@ -135,13 +135,13 @@ const DochiLifeDetail = () => {
     event.preventDefault();
     if (commentInput.trim()) {
       try {
-        const token = localStorage.getItem("token");
+        const token = localStorage.getItem('token');
         const userNickname = JSON.parse(
-          localStorage.getItem("nickname") || "null"
+          localStorage.getItem('nickname') || 'null'
         );
 
         if (!userNickname) {
-          console.error("닉네임을 불러오지 못했습니다.");
+          console.error('닉네임을 불러오지 못했습니다.');
           return;
         }
 
@@ -150,14 +150,14 @@ const DochiLifeDetail = () => {
           { content: commentInput, articleId: Number(id), userId: 1 },
           {
             headers: {
-              "Content-Type": `application/json`,
-              "ngrok-skip-browser-warning": "69420",
+              'Content-Type': `application/json`,
+              'ngrok-skip-browser-warning': '69420',
               Authorization: `Bearer ${token}`,
             },
           }
         );
 
-        console.log("CommentPostRes", response.data);
+        console.log('CommentPostRes', response.data);
         // 댓글 등록이 성공하면 새로운 댓글을 상태에 추가
         setComments((prevComments) => [
           ...prevComments,
@@ -167,15 +167,15 @@ const DochiLifeDetail = () => {
             content: commentInput,
           },
         ]);
-        setCommentInput("");
+        setCommentInput('');
       } catch (error) {
-        console.error("댓글 등록 실패", error);
+        console.error('댓글 등록 실패', error);
       }
     }
   };
 
   const handleDivClick = (event: React.FormEvent) => {
-    const form = document.getElementById("commentForm") as HTMLFormElement;
+    const form = document.getElementById('commentForm') as HTMLFormElement;
     if (form) {
       form.requestSubmit();
     }
@@ -195,9 +195,9 @@ const DochiLifeDetail = () => {
   const handleEditCommentSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem('token');
       if (!token) {
-        router.push("/login");
+        router.push('/signin');
         return;
       }
 
@@ -206,8 +206,8 @@ const DochiLifeDetail = () => {
         { content: editCommentContent },
         {
           headers: {
-            "Content-Type": `application/json`,
-            "ngrok-skip-browser-warning": "69420",
+            'Content-Type': `application/json`,
+            'ngrok-skip-browser-warning': '69420',
             Authorization: `Bearer ${token}`,
           },
         }
@@ -222,37 +222,37 @@ const DochiLifeDetail = () => {
           )
         );
         setEditCommentId(null);
-        setEditCommentContent("");
+        setEditCommentContent('');
       }
     } catch (error) {
-      console.error("댓글 수정 실패", error);
+      console.error('댓글 수정 실패', error);
     }
   };
 
   const handleEditSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem('token');
       if (!token) {
-        router.push("/login");
+        router.push('/signin');
         return;
       }
 
       const formData = new FormData();
-      formData.append("title", newTitle);
-      formData.append("content", newContent);
+      formData.append('title', newTitle);
+      formData.append('content', newContent);
       if (imageFile) {
-        formData.append("image", imageFile);
+        formData.append('image', imageFile);
       }
-      formData.append("hashtag", hashtags.join(","));
+      formData.append('hashtag', hashtags.join(','));
 
       const response = await axios.patch(
         `${process.env.NEXT_PUBLIC_BACKEND_HOSTNAME}/articles/${id}`,
         formData,
         {
           headers: {
-            "Content-Type": "multipart/form-data",
-            "ngrok-skip-browser-warning": "69420",
+            'Content-Type': 'multipart/form-data',
+            'ngrok-skip-browser-warning': '69420',
             Authorization: `Bearer ${token}`,
           },
         }
@@ -265,9 +265,9 @@ const DochiLifeDetail = () => {
       }
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
-        console.error("수정 요청을 처리하지 못했습니다.", error);
+        console.error('수정 요청을 처리하지 못했습니다.', error);
       } else {
-        console.error("알 수 없는 오류가 발생했습니다.", error);
+        console.error('알 수 없는 오류가 발생했습니다.', error);
       }
     }
   };
@@ -291,9 +291,9 @@ const DochiLifeDetail = () => {
       if (hashtags.length < 5) {
         setHashtags([...hashtags, hashtagInput.trim()]);
       } else {
-        alert("해시태그는 최대 5개까지 추가할 수 있습니다.");
+        alert('해시태그는 최대 5개까지 추가할 수 있습니다.');
       }
-      setHashtagInput("");
+      setHashtagInput('');
     }
   };
 
@@ -307,14 +307,14 @@ const DochiLifeDetail = () => {
         `${process.env.NEXT_PUBLIC_BACKEND_HOSTNAME}/articles/${id}`,
         {
           headers: {
-            "Content-Type": `application/json`,
-            "ngrok-skip-browser-warning": "69420",
+            'Content-Type': `application/json`,
+            'ngrok-skip-browser-warning': '69420',
           },
         }
       );
-      router.push("/dochiLife");
+      router.push('/dochiLife');
     } catch (error) {
-      console.error("삭제 실패", error);
+      console.error('삭제 실패', error);
     }
   };
 
@@ -324,9 +324,9 @@ const DochiLifeDetail = () => {
         `${process.env.NEXT_PUBLIC_BACKEND_HOSTNAME}/comments/${commentId}`,
         {
           headers: {
-            "Content-Type": "application/json",
-            "ngrok-skip-browser-warning": "69420",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            'Content-Type': 'application/json',
+            'ngrok-skip-browser-warning': '69420',
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         }
       );
@@ -336,7 +336,7 @@ const DochiLifeDetail = () => {
         );
       }
     } catch (error) {
-      console.error("댓글 삭제 실패", error);
+      console.error('댓글 삭제 실패', error);
     }
   };
 
@@ -351,12 +351,12 @@ const DochiLifeDetail = () => {
         <Card>
           <CardImageWrapper>
             <DetailImage
-              src={imagePreview || "/loading.svg"}
-              alt={newTitle || "제목 없음"}
+              src={imagePreview || '/loading.svg'}
+              alt={newTitle || '제목 없음'}
             />
           </CardImageWrapper>
           <CardContent>
-            <TitleText>{newTitle || "제목 없음"}</TitleText>
+            <TitleText>{newTitle || '제목 없음'}</TitleText>
             <DescriptionText>{content}</DescriptionText>
             <HashtagList>
               {hashtags.map((hashtag, index) => (
@@ -373,7 +373,7 @@ const DochiLifeDetail = () => {
             />
             <LikeButton
               onClick={toggleLike}
-              src={liked ? "/fillHeart.png" : "/emptyHeart.png"}
+              src={liked ? '/fillHeart.png' : '/emptyHeart.png'}
             />
           </CardContent>
         </Card>

@@ -1,18 +1,18 @@
-"use client";
+'use client';
 
-import Header from "@/components/Header";
-import Loading from "@/components/Loading";
-import axios from "axios";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import styled from "styled-components";
-import Swal from "sweetalert2";
-import withReactContent from "sweetalert2-react-content";
+import Header from '@/components/Header';
+import Loading from '@/components/Loading';
+import axios from 'axios';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import styled from 'styled-components';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 
 const Signin = () => {
   const [loading, setLoading] = useState(true);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const router = useRouter();
   const MySwal = withReactContent(Swal);
 
@@ -21,11 +21,11 @@ const Signin = () => {
       setLoading(false);
     };
 
-    if (document.readyState === "complete") {
+    if (document.readyState === 'complete') {
       handleLoad();
     } else {
-      window.addEventListener("load", handleLoad);
-      return () => window.removeEventListener("load", handleLoad);
+      window.addEventListener('load', handleLoad);
+      return () => window.removeEventListener('load', handleLoad);
     }
   }, []);
 
@@ -43,63 +43,63 @@ const Signin = () => {
         }
       );
       console.log(response.data);
-      localStorage.setItem("token", response.data.accessToken);
+      localStorage.setItem('token', response.data.accessToken);
       if (window.innerWidth <= 768) {
         MySwal.fire({
-          icon: "success",
-          title: "로그인 성공",
+          icon: 'success',
+          title: '로그인 성공',
           toast: true,
-          position: "top-end",
+          position: 'top-end',
           showConfirmButton: false,
           timer: 1000,
           customClass: {
-            popup: "swal-custom-popup",
-            title: "swal-custom-title",
-            htmlContainer: "swal-custom-html-container",
+            popup: 'swal-custom-popup',
+            title: 'swal-custom-title',
+            htmlContainer: 'swal-custom-html-container',
           },
         });
       } else {
         MySwal.fire({
-          icon: "success",
-          title: "로그인 성공",
-          confirmButtonText: "확인",
-          confirmButtonColor: "#d3a179",
+          icon: 'success',
+          title: '로그인 성공',
+          confirmButtonText: '확인',
+          confirmButtonColor: '#d3a179',
           customClass: {
-            popup: "swal-custom-popup",
-            title: "swal-custom-title",
-            htmlContainer: "swal-custom-html-container",
+            popup: 'swal-custom-popup',
+            title: 'swal-custom-title',
+            htmlContainer: 'swal-custom-html-container',
           },
         });
       }
-      router.push("/");
+      router.push('/');
     } catch (error) {
-      console.error("로그인 실패", error);
+      console.error('로그인 실패', error);
       if (window.innerWidth <= 768) {
         MySwal.fire({
-          icon: "error",
-          title: "로그인 실패",
-          text: "로그인 정보를 다시 확인해주세요!",
+          icon: 'error',
+          title: '로그인 실패',
+          text: '로그인 정보를 다시 확인해주세요!',
           toast: true,
-          position: "top-end",
+          position: 'top-end',
           showConfirmButton: false,
           timer: 1000,
           customClass: {
-            popup: "swal-custom-popup",
-            title: "swal-custom-title",
-            htmlContainer: "swal-custom-html-container",
+            popup: 'swal-custom-popup',
+            title: 'swal-custom-title',
+            htmlContainer: 'swal-custom-html-container',
           },
         });
       } else {
         MySwal.fire({
-          icon: "error",
-          title: "로그인 실패",
-          text: "로그인 정보를 다시 확인해주세요!",
-          confirmButtonText: "확인",
-          confirmButtonColor: "#d3a179",
+          icon: 'error',
+          title: '로그인 실패',
+          text: '로그인 정보를 다시 확인해주세요!',
+          confirmButtonText: '확인',
+          confirmButtonColor: '#d3a179',
           customClass: {
-            popup: "swal-custom-popup",
-            title: "swal-custom-title",
-            htmlContainer: "swal-custom-html-container",
+            popup: 'swal-custom-popup',
+            title: 'swal-custom-title',
+            htmlContainer: 'swal-custom-html-container',
           },
         });
       }
