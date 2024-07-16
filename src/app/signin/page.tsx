@@ -118,6 +118,7 @@ const Signin = () => {
           onChange={(e) => setEmail(e.target.value)}
         />
         <Input
+          type="password"
           placeholder="비밀번호를 입력해주세요"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
