@@ -23,9 +23,9 @@ export default function Home() {
     const stageHeight = window.innerHeight;
 
     hillsRef.current = [
-      new Hill("#E5B080", 0.2, 12),
-      new Hill("#D3A179", 0.5, 8),
-      new Hill("#F7C997", 1.4, 6),
+      new Hill("#E5B070", 0.2, 12),
+      new Hill("#D3A166", 0.5, 8),
+      new Hill("#F7C970", 1.4, 7),
     ];
 
     dochiControllerRef.current = new DochiController(stageWidth, stageHeight);
