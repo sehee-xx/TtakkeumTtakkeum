@@ -74,6 +74,8 @@ interface ObstacleType {
 
 const Game: React.FC = () => {
   const [isJumping, setIsJumping] = useState(false);
+  const [isDoubleJumping, setIsDoubleJumping] = useState(false);
+  const [jumpCount, setJumpCount] = useState(0);
   const [obstacles, setObstacles] = useState<ObstacleType[]>([]);
   const [lives, setLives] = useState(5);
   const [score, setScore] = useState(0);
@@ -84,12 +86,24 @@ const Game: React.FC = () => {
 
   const handleJump = useCallback(
     (e: KeyboardEvent) => {
-      if ((e.key === " " || e.key === "ArrowUp") && !isJumping) {
-        setIsJumping(true);
-        setTimeout(() => setIsJumping(false), 500);
+      if ((e.key === " " || e.key === "ArrowUp") && jumpCount < 2) {
+        if (jumpCount === 0) {
+          setIsJumping(true);
+          setJumpCount(1);
+          setTimeout(() => {
+            setIsJumping(false);
+          }, 500);
+        } else if (jumpCount === 1) {
+          setIsDoubleJumping(true);
+          setJumpCount(2);
+          setTimeout(() => {
+            setIsDoubleJumping(false);
+            setJumpCount(0);
+          }, 750);
+        }
       }
     },
-    [isJumping]
+    [jumpCount]
   );
 
   useEffect(() => {
@@ -137,7 +151,7 @@ const Game: React.FC = () => {
               prev.filter((obs) => obs.id !== obstacle.id)
             );
             setLives((prevLives) => prevLives - 1);
-          } else if (obstacle.left < -50) {
+          } else if (obstacle.left < -5) {
             setScore((prevScore) => prevScore + 1);
             setObstacles((prev) =>
               prev.filter((obs) => obs.id !== obstacle.id)
@@ -171,6 +185,7 @@ const Game: React.FC = () => {
     setScore(0);
     setObstacles([]);
     setGameOver(false);
+    setJumpCount(0);
   };
 
   return (
@@ -183,7 +198,11 @@ const Game: React.FC = () => {
           <RestartButton onClick={handleRestart}>Restart</RestartButton>
         </>
       )}
-      <Dochi ref={dochiRef} isJumping={isJumping} />
+      <Dochi
+        ref={dochiRef}
+        isJumping={isJumping}
+        isDoubleJumping={isDoubleJumping}
+      />
       {obstacles.map((obstacle) => (
         <Obstacle
           key={obstacle.id}

@@ -1,3 +1,4 @@
+// Obstacle.tsx
 import styled, { keyframes } from "styled-components";
 
 const move = keyframes`

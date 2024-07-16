@@ -1,3 +1,4 @@
+// Dochi.tsx
 import React, { forwardRef } from "react";
 import styled, { keyframes, css } from "styled-components";
 
@@ -7,7 +8,15 @@ const jump = keyframes`
   100% { bottom: 0; }
 `;
 
-const DochiWrapper = styled.div<{ isJumping: boolean }>`
+const doubleJump = keyframes`
+  0% { bottom: 250px; transform: rotate(0deg); }
+  100% { bottom: 350px; transform: rotate(360deg); }
+`;
+
+const DochiWrapper = styled.div<{
+  isJumping: boolean;
+  isDoubleJumping: boolean;
+}>`
   position: absolute;
   bottom: 0;
   left: 200px;
@@ -20,15 +29,27 @@ const DochiWrapper = styled.div<{ isJumping: boolean }>`
     css`
       animation: ${jump} 0.5s;
     `}
+  ${({ isDoubleJumping }) =>
+    isDoubleJumping &&
+    css`
+      animation: ${doubleJump} 0.75s;
+    `}
 `;
 
 interface DochiProps {
   isJumping: boolean;
+  isDoubleJumping: boolean;
 }
 
-const Dochi = forwardRef<HTMLDivElement, DochiProps>(({ isJumping }, ref) => (
-  <DochiWrapper ref={ref} isJumping={isJumping} />
-));
+const Dochi = forwardRef<HTMLDivElement, DochiProps>(
+  ({ isJumping, isDoubleJumping }, ref) => (
+    <DochiWrapper
+      ref={ref}
+      isJumping={isJumping}
+      isDoubleJumping={isDoubleJumping}
+    />
+  )
+);
 
 Dochi.displayName = "Dochi";
 
