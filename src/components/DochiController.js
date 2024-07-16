@@ -6,7 +6,7 @@ export class DochiController {
     this.img.onload = () => {
       this.loaded();
     };
-    this.img.src = "/dochi.svg";
+    this.img.src = "/mainDochi.svg";
 
     this.items = [];
     this.stageWidth = stageWidth;
@@ -40,7 +40,7 @@ export class DochiController {
 
       for (let i = this.items.length - 1; i >= 0; i--) {
         const item = this.items[i];
-        if (item.x < -item.width) {
+        if (item.x < -item.dochiWidth) {
           this.items.splice(i, 1);
         } else {
           item.draw(ctx, t, dots);

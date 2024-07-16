@@ -82,13 +82,13 @@ export class Hill {
   }
 
   getY() {
-    const min = this.stageHeight / 8;
+    const min = this.stageHeight / 4;
     const max = this.stageHeight - min;
     return min + Math.random() * (max - min);
   }
 
   getYInRange(prevY) {
-    const range = this.stageHeight / 10;
+    const range = this.stageHeight / 8; // 이전보다 작은 범위로 설정
     const min = Math.max(this.stageHeight / 4, prevY - range);
     const max = Math.min(
       this.stageHeight - this.stageHeight / 4,
