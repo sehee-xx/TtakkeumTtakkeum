@@ -30,10 +30,6 @@ const Header = () => {
     router.push("/bestDochi");
   };
 
-  const onClickGame = () => {
-    router.push("/game");
-  };
-
   const onClickSignin = () => {
     router.push("/signin");
   };
@@ -61,9 +57,6 @@ const Header = () => {
         >
           금주의 도치 보기
         </ShowGeumchi>
-        <MenuText onClick={onClickGame} active={pathname.includes("/game")}>
-          도치런
-        </MenuText>
         {!isLoggedIn && (
           <>
             <MenuText
