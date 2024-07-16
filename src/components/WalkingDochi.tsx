@@ -2,18 +2,13 @@
 import React from "react";
 import styled, { keyframes } from "styled-components";
 
-const walk = keyframes`
-  0% { left: -150px; }
-  100% { left: 100%; }
-`;
-
 const DochiWrapper = styled.div`
   position: fixed;
   bottom: 0px;
-  width: 100px;
-  height: 100px;
-  background: url("/gamestart.svg") no-repeat center/contain;
-  animation: ${walk} 10s linear infinite;
+  right: 10px;
+  width: 140px;
+  height: 140px;
+  background: url("/gamestart.png") no-repeat center/contain;
   cursor: pointer;
   z-index: 1000;
 `;
