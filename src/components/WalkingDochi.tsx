@@ -11,6 +11,11 @@ const DochiWrapper = styled.div`
   background: url("/gamestart.png") no-repeat center/contain;
   cursor: pointer;
   z-index: 1000;
+
+  @media (max-width: 480px) {
+    width: 80px;
+    height: 80px;
+  }
 `;
 
 interface WalkingDochiProps {
