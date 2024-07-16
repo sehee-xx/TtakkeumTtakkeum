@@ -1,15 +1,17 @@
-// components/DochiController.js
 import Dochi from "./Dochi";
 
 export class DochiController {
-  constructor() {
+  constructor(stageWidth, stageHeight) {
     this.img = new Image();
     this.img.onload = () => {
       this.loaded();
     };
-    this.img.src = "/dochi.png";
+    this.img.src = "/dochi.svg";
 
     this.items = [];
+    this.stageWidth = stageWidth;
+    this.stageHeight = stageHeight;
+
     this.cur = 0;
     this.isLoaded = false;
   }
@@ -25,9 +27,7 @@ export class DochiController {
   }
 
   addDochi() {
-    this.items.push(
-      new Dochi(this.img, this, this.stageWidth, this.stageHeight)
-    );
+    this.items.push(new Dochi(this.img, this.stageWidth, this.stageHeight));
   }
 
   draw(ctx, t, dots) {

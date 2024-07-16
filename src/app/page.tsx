@@ -1,4 +1,3 @@
-// pages/index.js
 "use client";
 import { useEffect, useRef } from "react";
 import styled, { createGlobalStyle } from "styled-components";
@@ -20,28 +19,26 @@ export default function Home() {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
+    const stageWidth = window.innerWidth;
+    const stageHeight = window.innerHeight;
+
     hillsRef.current = [
       new Hill("#E5B080", 0.2, 12),
       new Hill("#D3A179", 0.5, 8),
       new Hill("#F7C997", 1.4, 6),
     ];
 
-    dochiControllerRef.current = new DochiController();
+    dochiControllerRef.current = new DochiController(stageWidth, stageHeight);
 
     const resize = () => {
-      canvas.width = window.innerWidth * 2;
-      canvas.height = window.innerHeight * 2;
+      canvas.width = stageWidth * 2;
+      canvas.height = stageHeight * 2;
       ctx.scale(2, 2);
 
-      hillsRef.current.forEach((hill) =>
-        hill.resize(window.innerWidth, window.innerHeight)
-      );
+      hillsRef.current.forEach((hill) => hill.resize(stageWidth, stageHeight));
 
       if (dochiControllerRef.current) {
-        dochiControllerRef.current.resize(
-          window.innerWidth,
-          window.innerHeight
-        );
+        dochiControllerRef.current.resize(stageWidth, stageHeight);
       }
     };
 
