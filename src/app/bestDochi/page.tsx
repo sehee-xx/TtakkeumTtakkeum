@@ -1,33 +1,49 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import Header from "@/components/Header";
+import axios from "axios";
+
+interface BestCard {
+  id: number;
+  dochiArticleImage: string;
+  dochiname: string;
+  totalLikes: number;
+}
 
 const BestDochi = () => {
   const [liked, setLiked] = useState(Array(10).fill(false));
+  const [bestCard, setBestCard] = useState<BestCard[]>([]);
 
-  const top10Dochi = [
-    {
-      id: 1,
-      name: "고슴도치 1",
-      image: "/dochiLife/ex1.png",
-      points: 120,
-    },
-    {
-      id: 2,
-      name: "고슴도치 2",
-      image: "/dochiLife/ex2.png",
-      points: 110,
-    },
-    {
-      id: 3,
-      name: "고슴도치 3",
-      image: "/dochiLife/ex3.png",
-      points: 105,
-    },
-    // ... 나머지 고슴도치 데이터 추가
-  ];
+  const fetchBestDochi = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_BACKEND_HOSTNAME}/articles/dochi-of-the-week`,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            "ngrok-skip-browser-warning": "69420",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      // bestCard 데이터를 적절히 변환하여 id 속성을 추가
+      const transformedData = response.data.map((item: any, index: number) => ({
+        id: item.id || index, // id가 없으면 index를 사용
+        dochiArticleImage: item.dochiArticleImage,
+        dochiname: item.dochiname,
+        totalLikes: item.totalLikes,
+      }));
+      setBestCard(transformedData);
+    } catch (error) {
+      console.error("금주의 도치 로드 실패", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchBestDochi();
+  }, []);
 
   const handleLikeClick = (index: number) => {
     setLiked((prev) => {
@@ -42,7 +58,7 @@ const BestDochi = () => {
       <Header />
       <Title>[ 금주의 도치 보기 ]</Title>
       <DochiGrid>
-        {top10Dochi.map((dochi, index) => (
+        {bestCard.map((dochi, index) => (
           <DochiCard key={dochi.id}>
             <Medal>
               {index === 0
@@ -54,7 +70,10 @@ const BestDochi = () => {
                 : `#${index + 1}`}
             </Medal>
             <DochiImageWrapper>
-              <DochiImage src={dochi.image} alt={dochi.name} />
+              <DochiImage
+                src={dochi.dochiArticleImage}
+                alt={dochi.dochiArticleImage}
+              />
               {/* <LikeButton
                 liked={liked[index]}
                 onClick={() => handleLikeClick(index)}
@@ -63,8 +82,8 @@ const BestDochi = () => {
               </LikeButton> */}
             </DochiImageWrapper>
             <DochiInfo>
-              <DochiName>{dochi.name}</DochiName>
-              <DochiPoints>{dochi.points} 좋아요</DochiPoints>
+              <DochiName>{dochi.dochiname}</DochiName>
+              <DochiPoints>{dochi.totalLikes} 좋아요</DochiPoints>
             </DochiInfo>
           </DochiCard>
         ))}

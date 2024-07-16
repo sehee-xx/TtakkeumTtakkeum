@@ -1,8 +1,11 @@
+// RootLayout.tsx
 "use client";
 
 import { useEffect, useState } from "react";
 import GlobalStyle from "../../styles/GlobalStyles";
 import Loading from "@/components/Loading";
+import { usePathname, useRouter } from "next/navigation";
+import WalkingDochi from "@/components/WalkingDochi";
 
 export default function RootLayout({
   children,
@@ -10,6 +13,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     const handleComplete = () => setLoading(false);
@@ -25,10 +30,25 @@ export default function RootLayout({
     };
   }, []);
 
+  const handleHedgehogClick = () => {
+    router.push("/game");
+  };
+
   return (
     <html lang="en">
       <GlobalStyle />
-      <body>{loading ? <Loading /> : children}</body>
+      <body>
+        {loading ? (
+          <Loading />
+        ) : (
+          <>
+            {children}
+            {pathname !== "/game" && (
+              <WalkingDochi onClick={handleHedgehogClick} />
+            )}
+          </>
+        )}
+      </body>
     </html>
   );
 }
