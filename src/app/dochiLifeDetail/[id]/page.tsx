@@ -36,6 +36,7 @@ const DochiLifeDetail = () => {
   const [hashtagInput, setHashtagInput] = useState<string>("");
   const [editCommentId, setEditCommentId] = useState<number | null>(null);
   const [editCommentContent, setEditCommentContent] = useState<string>("");
+  const [isProcessingLike, setIsProcessingLike] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -74,6 +75,7 @@ const DochiLifeDetail = () => {
           content: comment.content,
         }))
       );
+      setLiked(response.data.isLike); // 초기 좋아요 상태 설정
       setLoading(false);
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
@@ -89,6 +91,12 @@ const DochiLifeDetail = () => {
   };
 
   const toggleLike = async () => {
+    if (isProcessingLike) {
+      return; // 요청이 진행 중이면 새로운 요청을 막음
+    }
+
+    setIsProcessingLike(true);
+
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -96,19 +104,21 @@ const DochiLifeDetail = () => {
         return;
       }
 
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BACKEND_HOSTNAME}/articles/${id}/like`,
-        { like: !liked },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            "ngrok-skip-browser-warning": "69420",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      if (response.status === 200) {
-        setLiked((prev) => !prev);
+      const url = `${process.env.NEXT_PUBLIC_BACKEND_HOSTNAME}/articles/${id}/like`;
+      const method = liked ? "delete" : "post";
+
+      const response = await axios({
+        method: method,
+        url: url,
+        headers: {
+          "Content-Type": "application/json",
+          "ngrok-skip-browser-warning": "69420",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.status === 200 || response.status === 201) {
+        setLiked((prevLiked) => !prevLiked);
       }
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
@@ -116,6 +126,8 @@ const DochiLifeDetail = () => {
       } else {
         console.error("알 수 없는 오류가 발생했습니다.", error);
       }
+    } finally {
+      setIsProcessingLike(false);
     }
   };
 
@@ -310,10 +322,9 @@ const DochiLifeDetail = () => {
     try {
       const response = await axios.delete(
         `${process.env.NEXT_PUBLIC_BACKEND_HOSTNAME}/comments/${commentId}`,
-
         {
           headers: {
-            "Content-Type": "multipart/form-data",
+            "Content-Type": "application/json",
             "ngrok-skip-browser-warning": "69420",
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
@@ -523,6 +534,7 @@ const CardImageWrapper = styled.div`
   height: auto;
   overflow: hidden;
   padding: 30px;
+  box-sizing: border-box;
 
   @media (max-width: 768px) {
     width: 100%;
