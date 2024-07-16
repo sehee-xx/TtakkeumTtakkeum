@@ -1,4 +1,4 @@
-export class Dochi {
+export default class Dochi {
   constructor(img, stageWidth, stageHeight) {
     this.img = img;
 
@@ -105,5 +105,3 @@ export class Dochi {
     };
   }
 }
-
-export default Dochi;

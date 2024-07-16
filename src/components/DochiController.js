@@ -1,6 +1,6 @@
 import Dochi from "./Dochi";
 
-export class DochiController {
+export default class DochiController {
   constructor(stageWidth, stageHeight) {
     this.img = new Image();
     this.img.onload = () => {
@@ -49,5 +49,3 @@ export class DochiController {
     }
   }
 }
-
-export default DochiController;
