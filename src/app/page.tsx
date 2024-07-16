@@ -39,8 +39,10 @@ export default function Home() {
               <img src="/MainCard/MainCard1.svg" alt="Hedgehog 1" />
             </ImageWrapper>
             <CardText>
-              <h2>내 고슴도치 자랑하기</h2>
-              <p>당신의 고슴도치를 자랑해보세요! 사진과 이야기를 공유하세요!</p>
+              <MainText>내 고슴도치 자랑하기</MainText>
+              <SubText>
+                당신의 고슴도치를 자랑해보세요! 사진과 이야기를 공유하세요!
+              </SubText>
             </CardText>
           </CardBig>
           <CardSmall>
@@ -66,8 +68,8 @@ export default function Home() {
               <img src="/MainCard/MainCard2.svg" alt="Hedgehog 2" />
             </ImageWrapper>
             <CardText>
-              <h2>금주의 고슴도치 보기</h2>
-              <p>이번 주 최고의 고슴도치를 구경해보세요!</p>
+              <MainText>금주의 고슴도치 보기</MainText>
+              <SubText>이번 주 최고의 고슴도치를 구경해보세요!</SubText>
             </CardText>
           </CardBig>
         </Section>
@@ -81,8 +83,10 @@ export default function Home() {
               <img src="/MainCard/MainCard4.svg" alt="Hedgehog 4" />
             </ImageWrapper>
             <CardText>
-              <h2>정보 공유하기</h2>
-              <p>고슴도치에 대한 질문과 답변을 통해 정보를 공유해보세요!</p>
+              <MainText>정보 공유하기</MainText>
+              <SubText>
+                고슴도치에 대한 질문과 답변을 통해 정보를 공유해보세요!
+              </SubText>
             </CardText>
           </CardBig>
           <CardSmall>
@@ -151,10 +155,8 @@ const Section = styled.section`
 `;
 
 const CardBig = styled.div`
-  background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(10px);
   border-radius: 15px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -166,7 +168,6 @@ const CardBig = styled.div`
 
   &:hover {
     transform: scale(1.05);
-    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.2);
   }
 
   @media (max-width: 1200px) {
@@ -272,5 +273,27 @@ const CardText = styled.div`
   p {
     font-size: 16px;
     color: #58595b;
+  }
+`;
+
+const MainText = styled.div`
+  font-size: 30px;
+  font-weight: 700;
+  color: #58595b;
+  padding-bottom: 20px;
+  padding-top: 10px;
+
+  @media (max-width: 480px) {
+    font-size: 24px;
+  }
+`;
+
+const SubText = styled.div`
+  font-size: 20px;
+  font-weight: 700;
+  color: #58595b;
+
+  @media (max-width: 480px) {
+    font-size: 16px;
   }
 `;
