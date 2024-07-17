@@ -1,4 +1,4 @@
-export class Hill {
+export default class Hill {
   constructor(color, speed, total) {
     this.color = color;
     this.speed = speed;
@@ -88,7 +88,7 @@ export class Hill {
   }
 
   getYInRange(prevY) {
-    const range = this.stageHeight / 8; // 이전보다 작은 범위로 설정
+    const range = this.stageHeight / 10;
     const min = Math.max(this.stageHeight / 4, prevY - range);
     const max = Math.min(
       this.stageHeight - this.stageHeight / 4,
@@ -97,5 +97,3 @@ export class Hill {
     return min + Math.random() * (max - min);
   }
 }
-
-export default Hill;

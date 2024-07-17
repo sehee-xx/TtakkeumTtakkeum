@@ -1,6 +1,6 @@
 import Dochi from "./Dochi";
 
-export class DochiController {
+export default class DochiController {
   constructor(stageWidth, stageHeight) {
     this.img = new Image();
     this.img.onload = () => {
@@ -42,6 +42,7 @@ export class DochiController {
         const item = this.items[i];
         if (item.x < -item.dochiWidth) {
           this.items.splice(i, 1);
+          this.addDochi();
         } else {
           item.draw(ctx, t, dots);
         }
@@ -49,5 +50,3 @@ export class DochiController {
     }
   }
 }
-
-export default DochiController;

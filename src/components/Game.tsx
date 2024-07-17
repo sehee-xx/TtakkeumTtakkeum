@@ -2,8 +2,8 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import styled from "styled-components";
-import Dochi from "./Dochi";
 import Obstacle from "./Obstacle";
+import GameDochi from "./GameDochi";
 
 const GameWrapper = styled.div`
   width: 100%;
@@ -198,7 +198,7 @@ const Game: React.FC = () => {
           <RestartButton onClick={handleRestart}>Restart</RestartButton>
         </>
       )}
-      <Dochi
+      <GameDochi
         ref={dochiRef}
         isJumping={isJumping}
         isDoubleJumping={isDoubleJumping}

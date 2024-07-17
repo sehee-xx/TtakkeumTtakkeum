@@ -1,4 +1,3 @@
-// Dochi.tsx
 import React, { forwardRef } from "react";
 import styled, { keyframes, css } from "styled-components";
 
@@ -41,7 +40,7 @@ interface DochiProps {
   isDoubleJumping: boolean;
 }
 
-const Dochi = forwardRef<HTMLDivElement, DochiProps>(
+const GameDochi = forwardRef<HTMLDivElement, DochiProps>(
   ({ isJumping, isDoubleJumping }, ref) => (
     <DochiWrapper
       ref={ref}
@@ -51,6 +50,6 @@ const Dochi = forwardRef<HTMLDivElement, DochiProps>(
   )
 );
 
-Dochi.displayName = "Dochi";
+GameDochi.displayName = "Dochi";
 
-export default Dochi;
+export default GameDochi;
