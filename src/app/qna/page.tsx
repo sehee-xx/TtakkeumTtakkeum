@@ -5,7 +5,6 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
-// 응답 받는 놈
 interface QnACard {
   qId: number;
   qAuthorNickname: string;
@@ -21,7 +20,7 @@ interface Answer {
 const QnA = () => {
   const [qnaCard, setQnaCard] = useState<QnACard[]>([]);
   const [questionInput, setQuestionInput] = useState('');
-  const [answerInput, setAnswerInput] = useState<Answer[]>([]);
+  const [answerInput, setAnswerInput] = useState('');
   const [selectedQuestionId, setSelectedQuestionId] = useState<number | null>(
     null
   );
@@ -93,30 +92,49 @@ const QnA = () => {
     }
   };
 
-  // const handleAnswerSubmit = (event: React.FormEvent, questionId: number) => {
-  //   event.preventDefault();
-  //   if (answerInput.trim()) {
-  //     setQuestions(
-  //       qnaCard.map((q) =>
-  //         q.id === questionId
-  //           ? {
-  //               ...q,
-  //               answers: [
-  //                 ...q.answers,
-  //                 {
-  //                   id: q.answers.length + 1,
-  //                   author: '새 작성자', // 임의의 작성자 이름
-  //                   content: answerInput,
-  //                 },
-  //               ],
-  //             }
-  //           : q
-  //       )
-  //     );
-  //     setAnswerInput('');
-  //     setSelectedQuestionId(null);
-  //   }
-  // };
+  const handleAnswerSubmit = async (
+    event: React.FormEvent,
+    selectedQuestionId: number
+  ) => {
+    event.preventDefault();
+    if (selectedQuestionId && answerInput.trim()) {
+      try {
+        const response = await axios.post(
+          `${process.env.NEXT_PUBLIC_BACKEND_HOSTNAME}/qnas/${selectedQuestionId}/answers`,
+          {
+            content: answerInput,
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
+          }
+        );
+
+        const newAnswer = {
+          aId: response.data.id,
+          aAuthorNickname: response.data.author.nickname,
+          aContent: response.data.content,
+        };
+
+        setQnaCard(
+          qnaCard.map((q) =>
+            q.qId === selectedQuestionId
+              ? {
+                  ...q,
+                  answers: [...q.answers, newAnswer],
+                }
+              : q
+          )
+        );
+        setAnswerInput('');
+        setSelectedQuestionId(null);
+      } catch (error) {
+        console.error('답변 등록 실패', error);
+      }
+    }
+  };
 
   return (
     <QnAWrapper>
@@ -136,8 +154,8 @@ const QnA = () => {
                   </Answer>
                 ))}
               </AnswerList>
-              {/* {selectedQuestionId === q.qId ? (
-                <Form onSubmit={(event) => handleAnswerSubmit(event, q.id)}>
+              {selectedQuestionId === q.qId ? (
+                <Form onSubmit={(event) => handleAnswerSubmit(event, q.qId)}>
                   <Textarea
                     value={answerInput}
                     onChange={(e) => setAnswerInput(e.target.value)}
@@ -150,7 +168,7 @@ const QnA = () => {
                 <AnswerButton onClick={() => setSelectedQuestionId(q.qId)}>
                   답변하기
                 </AnswerButton>
-              )} */}
+              )}
             </Question>
           ))}
         </Section>
