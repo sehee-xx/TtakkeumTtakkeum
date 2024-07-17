@@ -38,8 +38,6 @@ const QnA = () => {
         }
       );
 
-      console.log('나와라아아아아ㅏ');
-      console.log(response.data);
       // 서버로부터 받아온 데이터를 변환하여 QnACard 형태로 변형
       const transformedData = response.data.map((item: any) => ({
         qId: item.id,
@@ -63,21 +61,37 @@ const QnA = () => {
     fetchQnA();
   }, []);
 
-  // const handleQuestionSubmit = (event: React.FormEvent) => {
-  //   event.preventDefault();
-  //   if (questionInput.trim()) {
-  //     setQuestions([
-  //       ...qnaCard,
-  //       {
-  //         id: qnaCard.length + 1,
-  //         author: '새 작성자', // 임의의 작성자 이름
-  //         question: questionInput,
-  //         answers: [],
-  //       },
-  //     ]);
-  //     setQuestionInput('');
-  //   }
-  // };
+  const handleQuestionSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (questionInput.trim()) {
+      try {
+        const response = await axios.post(
+          `${process.env.NEXT_PUBLIC_BACKEND_HOSTNAME}/qnas/questions`,
+          {
+            content: questionInput,
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
+          }
+        );
+
+        const newQuestion = {
+          qId: response.data.id,
+          qAuthorNickname: response.data.author.nickname,
+          qContent: response.data.content,
+          answers: [],
+        };
+
+        setQnaCard([...qnaCard, newQuestion]);
+        setQuestionInput('');
+      } catch (error) {
+        console.error('질문 등록 실패', error);
+      }
+    }
+  };
 
   // const handleAnswerSubmit = (event: React.FormEvent, questionId: number) => {
   //   event.preventDefault();
@@ -142,7 +156,7 @@ const QnA = () => {
         </Section>
         <Section>
           <Title>질문하기</Title>
-          {/* <Form onSubmit={handleQuestionSubmit}>
+          <Form onSubmit={handleQuestionSubmit}>
             <Textarea
               value={questionInput}
               onChange={(e) => setQuestionInput(e.target.value)}
@@ -150,7 +164,7 @@ const QnA = () => {
               required
             />
             <DivButton onClick={handleQuestionSubmit}>질문하기</DivButton>
-          </Form> */}
+          </Form>
         </Section>
       </MainContent>
     </QnAWrapper>
