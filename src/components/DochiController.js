@@ -42,6 +42,7 @@ export default class DochiController {
         const item = this.items[i];
         if (item.x < -item.dochiWidth) {
           this.items.splice(i, 1);
+          this.addDochi();
         } else {
           item.draw(ctx, t, dots);
         }
