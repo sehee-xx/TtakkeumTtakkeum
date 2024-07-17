@@ -58,7 +58,7 @@ const QnA = () => {
 
   useEffect(() => {
     fetchQnA();
-  }, [qnaCard]);
+  }, []);
 
   const handleQuestionSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -138,7 +138,7 @@ const QnA = () => {
 
   const handleDeleteQna = async (id: number) => {
     try {
-      await axios.delete(
+      const response = await axios.delete(
         `${process.env.NEXT_PUBLIC_BACKEND_HOSTNAME}/qnas/${id}`,
         {
           headers: {
@@ -148,6 +148,12 @@ const QnA = () => {
           },
         }
       );
+      if (response.status === 200) {
+        // 상태 업데이트
+        setQnaCard((prevQnaCard) => prevQnaCard.filter((q) => q.qId !== id));
+      } else {
+        console.error('삭제 실패: 응답 상태가 200이 아님');
+      }
     } catch (error) {
       console.error('삭제 실패', error);
     }
@@ -155,7 +161,7 @@ const QnA = () => {
 
   const handleDeleteAnswer = async (id: number) => {
     try {
-      await axios.delete(
+      const response = await axios.delete(
         `${process.env.NEXT_PUBLIC_BACKEND_HOSTNAME}/qnas/answers/${id}`,
         {
           headers: {
@@ -165,6 +171,16 @@ const QnA = () => {
           },
         }
       );
+      if (response.status === 200) {
+        setQnaCard((prevQnaCard) =>
+          prevQnaCard.map((q) => ({
+            ...q,
+            answers: q.answers.filter((a) => a.aId !== id),
+          }))
+        );
+      } else {
+        console.error('삭제 실패: 응답 상태가 200이 아님');
+      }
     } catch (error) {
       console.error('삭제 실패', error);
     }
