@@ -58,7 +58,7 @@ const QnA = () => {
 
   useEffect(() => {
     fetchQnA();
-  }, []);
+  }, [qnaCard]);
 
   const handleQuestionSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -136,6 +136,40 @@ const QnA = () => {
     }
   };
 
+  const handleDeleteQna = async (id: number) => {
+    try {
+      await axios.delete(
+        `${process.env.NEXT_PUBLIC_BACKEND_HOSTNAME}/qnas/${id}`,
+        {
+          headers: {
+            'Content-Type': `application/json`,
+            'ngrok-skip-browser-warning': '69420',
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        }
+      );
+    } catch (error) {
+      console.error('삭제 실패', error);
+    }
+  };
+
+  const handleDeleteAnswer = async (id: number) => {
+    try {
+      await axios.delete(
+        `${process.env.NEXT_PUBLIC_BACKEND_HOSTNAME}/qnas/answers/${id}`,
+        {
+          headers: {
+            'Content-Type': `application/json`,
+            'ngrok-skip-browser-warning': '69420',
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        }
+      );
+    } catch (error) {
+      console.error('삭제 실패', error);
+    }
+  };
+
   return (
     <QnAWrapper>
       <Header />
@@ -144,11 +178,19 @@ const QnA = () => {
           <Title>[ Q&A ]</Title>
           {qnaCard.map((q) => (
             <Question key={q.qId}>
+              <QuestionDeleteIcon
+                src="/deleteIcon.png"
+                onClick={() => handleDeleteQna(q.qId)}
+              />
               <QuestionAuthor>{q.qAuthorNickname}</QuestionAuthor>
               <QuestionText>{q.qContent}</QuestionText>
               <AnswerList>
                 {q.answers.map((answer, index) => (
                   <Answer key={index}>
+                    <AnswerDeleteIcon
+                      src="/deleteIcon.png"
+                      onClick={() => handleDeleteAnswer(answer.aId)}
+                    />
                     <AnswerAuthor>{answer.aAuthorNickname}</AnswerAuthor>
                     {answer.aContent}
                   </Answer>
@@ -238,10 +280,27 @@ const Question = styled.div`
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
+  position: relative;
 
   @media (max-width: 480px) {
     padding: 15px;
   }
+`;
+
+const QuestionDeleteIcon = styled.img`
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  top: 10px;
+  right: 10px;
+`;
+
+const AnswerDeleteIcon = styled.img`
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  top: 10px;
+  right: 10px;
 `;
 
 const QuestionAuthor = styled.div`
@@ -281,6 +340,7 @@ const Answer = styled.div`
   border-radius: 5px;
   margin-bottom: 10px;
   color: #58595b;
+  position: relative;
 
   @media (max-width: 480px) {
     font-size: 14px;
