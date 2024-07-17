@@ -133,13 +133,16 @@ const DochiLifeDetail = () => {
 
   const handleCommentSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+    console.log('click comment submit');
     if (commentInput.trim()) {
       try {
-        const token = localStorage.getItem("token");
-        const userNickname = JSON.parse(
-          localStorage.getItem("nickname") || "null"
-        );
+        const token = localStorage.getItem('token');
+        // const userNickname = JSON.parse(
+        //   localStorage.getItem('nickname') || 'null'
+        // );
+        const userNickname = localStorage.getItem('nickname') || 'null';
 
+        console.log('userNickname', userNickname);
         if (!userNickname) {
           console.error("닉네임을 불러오지 못했습니다.");
           return;
@@ -307,8 +310,9 @@ const DochiLifeDetail = () => {
         `${process.env.NEXT_PUBLIC_BACKEND_HOSTNAME}/articles/${id}`,
         {
           headers: {
-            "Content-Type": `application/json`,
-            "ngrok-skip-browser-warning": "69420",
+            'Content-Type': `application/json`,
+            'ngrok-skip-browser-warning': '69420',
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         }
       );

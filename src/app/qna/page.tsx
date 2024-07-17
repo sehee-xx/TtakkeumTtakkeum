@@ -1,74 +1,188 @@
-"use client";
+'use client';
 
-import Header from "@/components/Header";
-import { useState } from "react";
-import styled from "styled-components";
+import Header from '@/components/Header';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
+import styled from 'styled-components';
+
+interface QnACard {
+  qId: number;
+  qAuthorNickname: string;
+  qContent: string;
+  answers: Answer[];
+}
+interface Answer {
+  aId: number;
+  aAuthorNickname: string;
+  aContent: string;
+}
 
 const QnA = () => {
-  const [questions, setQuestions] = useState([
-    {
-      id: 1,
-      author: "사용자1",
-      question: "고슴도치 먹이는 무엇이 좋을까요?",
-      answers: [
-        { id: 1, author: "사용자2", content: "곤충이 좋습니다." },
-        { id: 2, author: "사용자3", content: "사료도 가능합니다." },
-      ],
-    },
-    {
-      id: 2,
-      author: "사용자4",
-      question: "고슴도치의 적정 온도는?",
-      answers: [
-        { id: 1, author: "사용자5", content: "22도에서 26도가 적당합니다." },
-      ],
-    },
-  ]);
-
-  const [questionInput, setQuestionInput] = useState("");
-  const [answerInput, setAnswerInput] = useState("");
+  const [qnaCard, setQnaCard] = useState<QnACard[]>([]);
+  const [questionInput, setQuestionInput] = useState('');
+  const [answerInput, setAnswerInput] = useState('');
   const [selectedQuestionId, setSelectedQuestionId] = useState<number | null>(
     null
   );
 
-  const handleQuestionSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
-    if (questionInput.trim()) {
-      setQuestions([
-        ...questions,
+  const fetchQnA = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_BACKEND_HOSTNAME}/qnas`,
         {
-          id: questions.length + 1,
-          author: "새 작성자", // 임의의 작성자 이름
-          question: questionInput,
-          answers: [],
-        },
-      ]);
-      setQuestionInput("");
+          headers: {
+            'Content-Type': 'application/json',
+            'ngrok-skip-browser-warning': '69420',
+          },
+        }
+      );
+
+      // 서버로부터 받아온 데이터를 변환하여 QnACard 형태로 변형
+      const transformedData = response.data.map((item: any) => ({
+        qId: item.id,
+        qAuthorNickname: item.author.nickname,
+        qContent: item.content,
+        answers: item.answers.map((answer: any) => ({
+          aId: answer.id,
+          aAuthorNickname: answer.author.nickname,
+          aContent: answer.content,
+        })),
+      }));
+
+      // qnaCard 상태 업데이트
+      setQnaCard(transformedData);
+    } catch (error) {
+      console.error('QnA 로드 실패', error);
     }
   };
 
-  const handleAnswerSubmit = (event: React.FormEvent, questionId: number) => {
+  useEffect(() => {
+    fetchQnA();
+  }, []);
+
+  const handleQuestionSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    if (answerInput.trim()) {
-      setQuestions(
-        questions.map((q) =>
-          q.id === questionId
-            ? {
-                ...q,
-                answers: [
-                  ...q.answers,
-                  {
-                    id: q.answers.length + 1,
-                    author: "새 작성자", // 임의의 작성자 이름
-                    content: answerInput,
-                  },
-                ],
-              }
-            : q
-        )
+    if (questionInput.trim()) {
+      try {
+        const response = await axios.post(
+          `${process.env.NEXT_PUBLIC_BACKEND_HOSTNAME}/qnas/questions`,
+          {
+            content: questionInput,
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
+          }
+        );
+
+        const newQuestion = {
+          qId: response.data.id,
+          qAuthorNickname: response.data.author.nickname,
+          qContent: response.data.content,
+          answers: [],
+        };
+
+        setQnaCard([...qnaCard, newQuestion]);
+        setQuestionInput('');
+      } catch (error) {
+        console.error('질문 등록 실패', error);
+      }
+    }
+  };
+
+  const handleAnswerSubmit = async (
+    event: React.FormEvent,
+    selectedQuestionId: number
+  ) => {
+    event.preventDefault();
+    if (selectedQuestionId && answerInput.trim()) {
+      try {
+        const response = await axios.post(
+          `${process.env.NEXT_PUBLIC_BACKEND_HOSTNAME}/qnas/${selectedQuestionId}/answers`,
+          {
+            content: answerInput,
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
+          }
+        );
+
+        const newAnswer = {
+          aId: response.data.id,
+          aAuthorNickname: response.data.author.nickname,
+          aContent: response.data.content,
+        };
+
+        setQnaCard(
+          qnaCard.map((q) =>
+            q.qId === selectedQuestionId
+              ? {
+                  ...q,
+                  answers: [...q.answers, newAnswer],
+                }
+              : q
+          )
+        );
+        setAnswerInput('');
+        setSelectedQuestionId(null);
+      } catch (error) {
+        console.error('답변 등록 실패', error);
+      }
+    }
+  };
+
+  const handleDeleteQna = async (id: number) => {
+    try {
+      const response = await axios.delete(
+        `${process.env.NEXT_PUBLIC_BACKEND_HOSTNAME}/qnas/${id}`,
+        {
+          headers: {
+            'Content-Type': `application/json`,
+            'ngrok-skip-browser-warning': '69420',
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        }
       );
-      setAnswerInput("");
-      setSelectedQuestionId(null);
+      if (response.status === 200) {
+        // 상태 업데이트
+        setQnaCard((prevQnaCard) => prevQnaCard.filter((q) => q.qId !== id));
+      } else {
+        console.error('삭제 실패: 응답 상태가 200이 아님');
+      }
+    } catch (error) {
+      console.error('삭제 실패', error);
+    }
+  };
+
+  const handleDeleteAnswer = async (id: number) => {
+    try {
+      const response = await axios.delete(
+        `${process.env.NEXT_PUBLIC_BACKEND_HOSTNAME}/qnas/answers/${id}`,
+        {
+          headers: {
+            'Content-Type': `application/json`,
+            'ngrok-skip-browser-warning': '69420',
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        }
+      );
+      if (response.status === 200) {
+        setQnaCard((prevQnaCard) =>
+          prevQnaCard.map((q) => ({
+            ...q,
+            answers: q.answers.filter((a) => a.aId !== id),
+          }))
+        );
+      } else {
+        console.error('삭제 실패: 응답 상태가 200이 아님');
+      }
+    } catch (error) {
+      console.error('삭제 실패', error);
     }
   };
 
@@ -78,20 +192,28 @@ const QnA = () => {
       <MainContent>
         <Section>
           <Title>[ Q&A ]</Title>
-          {questions.map((q) => (
-            <Question key={q.id}>
-              <QuestionAuthor>{q.author}</QuestionAuthor>
-              <QuestionText>{q.question}</QuestionText>
+          {qnaCard.map((q) => (
+            <Question key={q.qId}>
+              <QuestionDeleteIcon
+                src="/deleteIcon.png"
+                onClick={() => handleDeleteQna(q.qId)}
+              />
+              <QuestionAuthor>{q.qAuthorNickname}</QuestionAuthor>
+              <QuestionText>{q.qContent}</QuestionText>
               <AnswerList>
                 {q.answers.map((answer, index) => (
                   <Answer key={index}>
-                    <AnswerAuthor>{answer.author}</AnswerAuthor>
-                    {answer.content}
+                    <AnswerDeleteIcon
+                      src="/deleteIcon.png"
+                      onClick={() => handleDeleteAnswer(answer.aId)}
+                    />
+                    <AnswerAuthor>{answer.aAuthorNickname}</AnswerAuthor>
+                    {answer.aContent}
                   </Answer>
                 ))}
               </AnswerList>
-              {selectedQuestionId === q.id ? (
-                <Form onSubmit={(event) => handleAnswerSubmit(event, q.id)}>
+              {selectedQuestionId === q.qId ? (
+                <Form onSubmit={(event) => handleAnswerSubmit(event, q.qId)}>
                   <Textarea
                     value={answerInput}
                     onChange={(e) => setAnswerInput(e.target.value)}
@@ -101,7 +223,7 @@ const QnA = () => {
                   <Button type="submit">답변하기</Button>
                 </Form>
               ) : (
-                <AnswerButton onClick={() => setSelectedQuestionId(q.id)}>
+                <AnswerButton onClick={() => setSelectedQuestionId(q.qId)}>
                   답변하기
                 </AnswerButton>
               )}
@@ -174,10 +296,27 @@ const Question = styled.div`
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
+  position: relative;
 
   @media (max-width: 480px) {
     padding: 15px;
   }
+`;
+
+const QuestionDeleteIcon = styled.img`
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  top: 10px;
+  right: 10px;
+`;
+
+const AnswerDeleteIcon = styled.img`
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  top: 10px;
+  right: 10px;
 `;
 
 const QuestionAuthor = styled.div`
@@ -217,6 +356,7 @@ const Answer = styled.div`
   border-radius: 5px;
   margin-bottom: 10px;
   color: #58595b;
+  position: relative;
 
   @media (max-width: 480px) {
     font-size: 14px;
