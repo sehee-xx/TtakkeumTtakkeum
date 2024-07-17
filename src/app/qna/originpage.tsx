@@ -1,108 +1,86 @@
 'use client';
 
 import Header from '@/components/Header';
-import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import styled from 'styled-components';
 
 // 응답 받는 놈
-interface QnACard {
-  qId: number;
-  qAuthorNickname: string;
-  qContent: string;
-  answers: Answer[];
-}
-interface Answer {
-  aId: number;
-  aAuthorNickname: string;
-  aContent: string;
+interface QnA {
+  qId: String;
+  qAuthorNickname: String;
+  qContent: String;
+  aId: String;
+  aAuthorNickname: String;
+  aContent: String;
 }
 
 const QnA = () => {
-  const [qnaCard, setQnaCard] = useState<QnACard[]>([]);
+  const [questions, setQuestions] = useState([
+    {
+      id: 1,
+      author: '사용자1',
+      question: '고슴도치 먹이는 무엇이 좋을까요?',
+      answers: [
+        { id: 1, author: '사용자2', content: '곤충이 좋습니다.' },
+        { id: 2, author: '사용자3', content: '사료도 가능합니다.' },
+      ],
+    },
+    {
+      id: 2,
+      author: '사용자4',
+      question: '고슴도치의 적정 온도는?',
+      answers: [
+        { id: 1, author: '사용자5', content: '22도에서 26도가 적당합니다.' },
+      ],
+    },
+  ]);
+
   const [questionInput, setQuestionInput] = useState('');
-  const [answerInput, setAnswerInput] = useState<Answer[]>([]);
+  const [answerInput, setAnswerInput] = useState('');
   const [selectedQuestionId, setSelectedQuestionId] = useState<number | null>(
     null
   );
 
-  const fetchQnA = async () => {
-    try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BACKEND_HOSTNAME}/qnas`,
+  const handleQuestionSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+    if (questionInput.trim()) {
+      setQuestions([
+        ...questions,
         {
-          headers: {
-            'Content-Type': 'application/json',
-            'ngrok-skip-browser-warning': '69420',
-          },
-        }
-      );
-
-      console.log('나와라아아아아ㅏ');
-      console.log(response.data);
-      // 서버로부터 받아온 데이터를 변환하여 QnACard 형태로 변형
-      const transformedData = response.data.map((item: any) => ({
-        qId: item.id,
-        qAuthorNickname: item.author.nickname,
-        qContent: item.content,
-        answers: item.answers.map((answer: any) => ({
-          aId: answer.id,
-          aAuthorNickname: answer.author.nickname,
-          aContent: answer.content,
-        })),
-      }));
-
-      // qnaCard 상태 업데이트
-      setQnaCard(transformedData);
-    } catch (error) {
-      console.error('QnA 로드 실패', error);
+          id: questions.length + 1,
+          author: '새 작성자', // 임의의 작성자 이름
+          question: questionInput,
+          answers: [],
+        },
+      ]);
+      setQuestionInput('');
     }
   };
 
-  useEffect(() => {
-    fetchQnA();
-  }, []);
-
-  // const handleQuestionSubmit = (event: React.FormEvent) => {
-  //   event.preventDefault();
-  //   if (questionInput.trim()) {
-  //     setQuestions([
-  //       ...qnaCard,
-  //       {
-  //         id: qnaCard.length + 1,
-  //         author: '새 작성자', // 임의의 작성자 이름
-  //         question: questionInput,
-  //         answers: [],
-  //       },
-  //     ]);
-  //     setQuestionInput('');
-  //   }
-  // };
-
-  // const handleAnswerSubmit = (event: React.FormEvent, questionId: number) => {
-  //   event.preventDefault();
-  //   if (answerInput.trim()) {
-  //     setQuestions(
-  //       qnaCard.map((q) =>
-  //         q.id === questionId
-  //           ? {
-  //               ...q,
-  //               answers: [
-  //                 ...q.answers,
-  //                 {
-  //                   id: q.answers.length + 1,
-  //                   author: '새 작성자', // 임의의 작성자 이름
-  //                   content: answerInput,
-  //                 },
-  //               ],
-  //             }
-  //           : q
-  //       )
-  //     );
-  //     setAnswerInput('');
-  //     setSelectedQuestionId(null);
-  //   }
-  // };
+  const handleAnswerSubmit = (event: React.FormEvent, questionId: number) => {
+    event.preventDefault();
+    if (answerInput.trim()) {
+      setQuestions(
+        questions.map((q) =>
+          q.id === questionId
+            ? {
+                ...q,
+                answers: [
+                  ...q.answers,
+                  {
+                    id: q.answers.length + 1,
+                    author: '새 작성자', // 임의의 작성자 이름
+                    content: answerInput,
+                  },
+                ],
+              }
+            : q
+        )
+      );
+      setAnswerInput('');
+      setSelectedQuestionId(null);
+    }
+  };
 
   return (
     <QnAWrapper>
@@ -110,19 +88,19 @@ const QnA = () => {
       <MainContent>
         <Section>
           <Title>[ Q&A ]</Title>
-          {qnaCard.map((q) => (
-            <Question key={q.qId}>
-              <QuestionAuthor>{q.qAuthorNickname}</QuestionAuthor>
-              <QuestionText>{q.qContent}</QuestionText>
+          {questions.map((q) => (
+            <Question key={q.id}>
+              <QuestionAuthor>{q.author}</QuestionAuthor>
+              <QuestionText>{q.question}</QuestionText>
               <AnswerList>
                 {q.answers.map((answer, index) => (
                   <Answer key={index}>
-                    <AnswerAuthor>{answer.aAuthorNickname}</AnswerAuthor>
-                    {answer.aContent}
+                    <AnswerAuthor>{answer.author}</AnswerAuthor>
+                    {answer.content}
                   </Answer>
                 ))}
               </AnswerList>
-              {/* {selectedQuestionId === q.qId ? (
+              {selectedQuestionId === q.id ? (
                 <Form onSubmit={(event) => handleAnswerSubmit(event, q.id)}>
                   <Textarea
                     value={answerInput}
@@ -133,16 +111,16 @@ const QnA = () => {
                   <Button type="submit">답변하기</Button>
                 </Form>
               ) : (
-                <AnswerButton onClick={() => setSelectedQuestionId(q.qId)}>
+                <AnswerButton onClick={() => setSelectedQuestionId(q.id)}>
                   답변하기
                 </AnswerButton>
-              )} */}
+              )}
             </Question>
           ))}
         </Section>
         <Section>
           <Title>질문하기</Title>
-          {/* <Form onSubmit={handleQuestionSubmit}>
+          <Form onSubmit={handleQuestionSubmit}>
             <Textarea
               value={questionInput}
               onChange={(e) => setQuestionInput(e.target.value)}
@@ -150,7 +128,7 @@ const QnA = () => {
               required
             />
             <DivButton onClick={handleQuestionSubmit}>질문하기</DivButton>
-          </Form> */}
+          </Form>
         </Section>
       </MainContent>
     </QnAWrapper>

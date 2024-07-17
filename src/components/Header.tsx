@@ -1,6 +1,6 @@
-import { useRouter, usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
-import styled from "styled-components";
+import { useRouter, usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import styled from 'styled-components';
 
 const Header = () => {
   const router = useRouter();
@@ -8,34 +8,34 @@ const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem('token');
     if (token) {
       setIsLoggedIn(true);
     }
   }, []);
 
   const onClickLogo = () => {
-    router.push("/");
+    router.push('/');
   };
 
   const onClickDochiLife = () => {
-    router.push("/dochiLife");
+    router.push('/dochiLife');
   };
 
   const onClickQnA = () => {
-    router.push("/qna");
+    router.push('/qna');
   };
 
   const onClickBestDochi = () => {
-    router.push("/bestDochi");
+    router.push('/bestDochi');
   };
 
   const onClickSignin = () => {
-    router.push("/signin");
+    router.push('/signin');
   };
 
   const onClickSignup = () => {
-    router.push("/signup");
+    router.push('/signup');
   };
 
   return (
@@ -44,16 +44,16 @@ const Header = () => {
       <HeaderMenu>
         <MenuText
           onClick={onClickDochiLife}
-          active={pathname.includes("/dochiLife")}
+          active={pathname.includes('/dochiLife')}
         >
           도치의 일상
         </MenuText>
-        <MenuText onClick={onClickQnA} active={pathname.includes("/qna")}>
+        <MenuText onClick={onClickQnA} active={pathname.includes('/qna')}>
           Q&A
         </MenuText>
         <ShowGeumchi
           onClick={onClickBestDochi}
-          active={pathname.includes("/bestDochi")}
+          active={pathname.includes('/bestDochi')}
         >
           금주의 도치 보기
         </ShowGeumchi>
@@ -61,13 +61,13 @@ const Header = () => {
           <>
             <MenuText
               onClick={onClickSignin}
-              active={pathname.includes("/signin")}
+              active={pathname.includes('/signin')}
             >
               로그인
             </MenuText>
             <MenuText
               onClick={onClickSignup}
-              active={pathname.includes("/signup")}
+              active={pathname.includes('/signup')}
             >
               회원가입
             </MenuText>
@@ -131,7 +131,7 @@ const HeaderMenu = styled.div`
 const MenuText = styled.label<{ active?: boolean }>`
   font-size: 18px;
   font-weight: 700;
-  color: ${(props) => (props.active ? "#d3a179" : "#58595b")};
+  color: ${(props) => (props.active ? '#d3a179' : '#58595b')};
   cursor: pointer;
 
   &:hover {
@@ -153,7 +153,7 @@ const ShowGeumchi = styled.div<{ active?: boolean }>`
   justify-content: center;
   font-size: 18px;
   font-weight: 700;
-  color: ${(props) => (props.active ? "#d3a179" : "#58595b")};
+  color: ${(props) => (props.active ? '#d3a179' : '#58595b')};
   cursor: pointer;
   width: fit-content;
 
