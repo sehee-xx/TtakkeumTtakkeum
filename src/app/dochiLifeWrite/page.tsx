@@ -5,6 +5,8 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import styled from "styled-components";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
 
 const DochiLifeWrite = () => {
   const router = useRouter();
@@ -14,6 +16,7 @@ const DochiLifeWrite = () => {
   const [hashtagInput, setHashtagInput] = useState<string>("");
   const [title, setTitle] = useState<string>("");
   const [content, setContent] = useState<string>("");
+  const MySwal = withReactContent(Swal);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -39,10 +42,62 @@ const DochiLifeWrite = () => {
           },
         }
       );
-      console.log("글 작성 성공", response.data);
+      if (window.innerWidth <= 768) {
+        MySwal.fire({
+          icon: "success",
+          title: "글이 성공적으로 작성되었습니다.",
+          toast: true,
+          position: "top-end",
+          showConfirmButton: false,
+          timer: 1000,
+          customClass: {
+            popup: "swal-custom-popup",
+            title: "swal-custom-title",
+            htmlContainer: "swal-custom-html-container",
+          },
+        });
+      } else {
+        MySwal.fire({
+          icon: "success",
+          title: "글이 성공적으로 작성되었습니다.",
+          confirmButtonText: "확인",
+          confirmButtonColor: "#d3a179",
+          customClass: {
+            popup: "swal-custom-popup",
+            title: "swal-custom-title",
+            htmlContainer: "swal-custom-html-container",
+          },
+        });
+      }
       router.push("/dochiLife");
     } catch (error) {
-      console.error("글 작성 실패", error);
+      if (window.innerWidth <= 768) {
+        MySwal.fire({
+          icon: "error",
+          title: "글 작성 실패",
+          toast: true,
+          position: "top-end",
+          showConfirmButton: false,
+          timer: 1000,
+          customClass: {
+            popup: "swal-custom-popup",
+            title: "swal-custom-title",
+            htmlContainer: "swal-custom-html-container",
+          },
+        });
+      } else {
+        MySwal.fire({
+          icon: "error",
+          title: "글 작성 실패",
+          confirmButtonText: "확인",
+          confirmButtonColor: "#d3a179",
+          customClass: {
+            popup: "swal-custom-popup",
+            title: "swal-custom-title",
+            htmlContainer: "swal-custom-html-container",
+          },
+        });
+      }
     }
   };
 

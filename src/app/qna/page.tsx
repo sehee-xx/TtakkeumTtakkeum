@@ -1,9 +1,11 @@
-'use client';
+"use client";
 
-import Header from '@/components/Header';
-import axios from 'axios';
-import { useEffect, useState } from 'react';
-import styled from 'styled-components';
+import Header from "@/components/Header";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import styled from "styled-components";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
 
 interface QnACard {
   qId: number;
@@ -19,11 +21,12 @@ interface Answer {
 
 const QnA = () => {
   const [qnaCard, setQnaCard] = useState<QnACard[]>([]);
-  const [questionInput, setQuestionInput] = useState('');
-  const [answerInput, setAnswerInput] = useState('');
+  const [questionInput, setQuestionInput] = useState("");
+  const [answerInput, setAnswerInput] = useState("");
   const [selectedQuestionId, setSelectedQuestionId] = useState<number | null>(
     null
   );
+  const MySwal = withReactContent(Swal);
 
   const fetchQnA = async () => {
     try {
@@ -31,8 +34,8 @@ const QnA = () => {
         `${process.env.NEXT_PUBLIC_BACKEND_HOSTNAME}/qnas`,
         {
           headers: {
-            'Content-Type': 'application/json',
-            'ngrok-skip-browser-warning': '69420',
+            "Content-Type": "application/json",
+            "ngrok-skip-browser-warning": "69420",
           },
         }
       );
@@ -52,7 +55,7 @@ const QnA = () => {
       // qnaCard 상태 업데이트
       setQnaCard(transformedData);
     } catch (error) {
-      console.error('QnA 로드 실패', error);
+      console.error("QnA 로드 실패", error);
     }
   };
 
@@ -71,8 +74,8 @@ const QnA = () => {
           },
           {
             headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${localStorage.getItem('token')}`,
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
             },
           }
         );
@@ -85,9 +88,62 @@ const QnA = () => {
         };
 
         setQnaCard([...qnaCard, newQuestion]);
-        setQuestionInput('');
+        setQuestionInput("");
+        if (window.innerWidth <= 768) {
+          MySwal.fire({
+            icon: "success",
+            title: "질문이 등록되었습니다.",
+            toast: true,
+            position: "top-end",
+            showConfirmButton: false,
+            timer: 1000,
+            customClass: {
+              popup: "swal-custom-popup",
+              title: "swal-custom-title",
+              htmlContainer: "swal-custom-html-container",
+            },
+          });
+        } else {
+          MySwal.fire({
+            icon: "success",
+            title: "질문이 등록되었습니다.",
+            confirmButtonText: "확인",
+            confirmButtonColor: "#d3a179",
+            customClass: {
+              popup: "swal-custom-popup",
+              title: "swal-custom-title",
+              htmlContainer: "swal-custom-html-container",
+            },
+          });
+        }
       } catch (error) {
-        console.error('질문 등록 실패', error);
+        if (window.innerWidth <= 768) {
+          MySwal.fire({
+            icon: "error",
+            title: "질문 등록에 실패했습니다.",
+            toast: true,
+            position: "top-end",
+            showConfirmButton: false,
+            timer: 1000,
+            customClass: {
+              popup: "swal-custom-popup",
+              title: "swal-custom-title",
+              htmlContainer: "swal-custom-html-container",
+            },
+          });
+        } else {
+          MySwal.fire({
+            icon: "error",
+            title: "질문 등록에 실패했습니다.",
+            confirmButtonText: "확인",
+            confirmButtonColor: "#d3a179",
+            customClass: {
+              popup: "swal-custom-popup",
+              title: "swal-custom-title",
+              htmlContainer: "swal-custom-html-container",
+            },
+          });
+        }
       }
     }
   };
@@ -106,8 +162,8 @@ const QnA = () => {
           },
           {
             headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${localStorage.getItem('token')}`,
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
             },
           }
         );
@@ -128,10 +184,63 @@ const QnA = () => {
               : q
           )
         );
-        setAnswerInput('');
+        setAnswerInput("");
         setSelectedQuestionId(null);
+        if (window.innerWidth <= 768) {
+          MySwal.fire({
+            icon: "success",
+            title: "답변이 등록되었습니다.",
+            toast: true,
+            position: "top-end",
+            showConfirmButton: false,
+            timer: 1000,
+            customClass: {
+              popup: "swal-custom-popup",
+              title: "swal-custom-title",
+              htmlContainer: "swal-custom-html-container",
+            },
+          });
+        } else {
+          MySwal.fire({
+            icon: "success",
+            title: "답변이 등록되었습니다.",
+            confirmButtonText: "확인",
+            confirmButtonColor: "#d3a179",
+            customClass: {
+              popup: "swal-custom-popup",
+              title: "swal-custom-title",
+              htmlContainer: "swal-custom-html-container",
+            },
+          });
+        }
       } catch (error) {
-        console.error('답변 등록 실패', error);
+        if (window.innerWidth <= 768) {
+          MySwal.fire({
+            icon: "error",
+            title: "답변 등록에 실패했습니다.",
+            toast: true,
+            position: "top-end",
+            showConfirmButton: false,
+            timer: 1000,
+            customClass: {
+              popup: "swal-custom-popup",
+              title: "swal-custom-title",
+              htmlContainer: "swal-custom-html-container",
+            },
+          });
+        } else {
+          MySwal.fire({
+            icon: "error",
+            title: "답변 등록에 실패했습니다.",
+            confirmButtonText: "확인",
+            confirmButtonColor: "#d3a179",
+            customClass: {
+              popup: "swal-custom-popup",
+              title: "swal-custom-title",
+              htmlContainer: "swal-custom-html-container",
+            },
+          });
+        }
       }
     }
   };
@@ -142,9 +251,9 @@ const QnA = () => {
         `${process.env.NEXT_PUBLIC_BACKEND_HOSTNAME}/qnas/${id}`,
         {
           headers: {
-            'Content-Type': `application/json`,
-            'ngrok-skip-browser-warning': '69420',
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
+            "Content-Type": `application/json`,
+            "ngrok-skip-browser-warning": "69420",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         }
       );
@@ -152,10 +261,63 @@ const QnA = () => {
         // 상태 업데이트
         setQnaCard((prevQnaCard) => prevQnaCard.filter((q) => q.qId !== id));
       } else {
-        console.error('삭제 실패: 응답 상태가 200이 아님');
+        console.error("삭제 실패: 응답 상태가 200이 아님");
+      }
+      if (window.innerWidth <= 768) {
+        MySwal.fire({
+          icon: "success",
+          title: "질문이 삭제되었습니다.",
+          toast: true,
+          position: "top-end",
+          showConfirmButton: false,
+          timer: 1000,
+          customClass: {
+            popup: "swal-custom-popup",
+            title: "swal-custom-title",
+            htmlContainer: "swal-custom-html-container",
+          },
+        });
+      } else {
+        MySwal.fire({
+          icon: "success",
+          title: "질문이 삭제되었습니다.",
+          confirmButtonText: "확인",
+          confirmButtonColor: "#d3a179",
+          customClass: {
+            popup: "swal-custom-popup",
+            title: "swal-custom-title",
+            htmlContainer: "swal-custom-html-container",
+          },
+        });
       }
     } catch (error) {
-      console.error('삭제 실패', error);
+      if (window.innerWidth <= 768) {
+        MySwal.fire({
+          icon: "error",
+          title: "질문 삭제에 실패했습니다.",
+          toast: true,
+          position: "top-end",
+          showConfirmButton: false,
+          timer: 1000,
+          customClass: {
+            popup: "swal-custom-popup",
+            title: "swal-custom-title",
+            htmlContainer: "swal-custom-html-container",
+          },
+        });
+      } else {
+        MySwal.fire({
+          icon: "error",
+          title: "질문 삭제에 실패했습니다.",
+          confirmButtonText: "확인",
+          confirmButtonColor: "#d3a179",
+          customClass: {
+            popup: "swal-custom-popup",
+            title: "swal-custom-title",
+            htmlContainer: "swal-custom-html-container",
+          },
+        });
+      }
     }
   };
 
@@ -165,9 +327,9 @@ const QnA = () => {
         `${process.env.NEXT_PUBLIC_BACKEND_HOSTNAME}/qnas/answers/${id}`,
         {
           headers: {
-            'Content-Type': `application/json`,
-            'ngrok-skip-browser-warning': '69420',
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
+            "Content-Type": `application/json`,
+            "ngrok-skip-browser-warning": "69420",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         }
       );
@@ -179,10 +341,63 @@ const QnA = () => {
           }))
         );
       } else {
-        console.error('삭제 실패: 응답 상태가 200이 아님');
+        console.error("삭제 실패: 응답 상태가 200이 아님");
+      }
+      if (window.innerWidth <= 768) {
+        MySwal.fire({
+          icon: "success",
+          title: "답변이 삭제되었습니다.",
+          toast: true,
+          position: "top-end",
+          showConfirmButton: false,
+          timer: 1000,
+          customClass: {
+            popup: "swal-custom-popup",
+            title: "swal-custom-title",
+            htmlContainer: "swal-custom-html-container",
+          },
+        });
+      } else {
+        MySwal.fire({
+          icon: "success",
+          title: "답변이 삭제되었습니다.",
+          confirmButtonText: "확인",
+          confirmButtonColor: "#d3a179",
+          customClass: {
+            popup: "swal-custom-popup",
+            title: "swal-custom-title",
+            htmlContainer: "swal-custom-html-container",
+          },
+        });
       }
     } catch (error) {
-      console.error('삭제 실패', error);
+      if (window.innerWidth <= 768) {
+        MySwal.fire({
+          icon: "error",
+          title: "답변 삭제 과정에서 오류가 발생했습니다.",
+          toast: true,
+          position: "top-end",
+          showConfirmButton: false,
+          timer: 1000,
+          customClass: {
+            popup: "swal-custom-popup",
+            title: "swal-custom-title",
+            htmlContainer: "swal-custom-html-container",
+          },
+        });
+      } else {
+        MySwal.fire({
+          icon: "error",
+          title: "답변 삭제 과정에서 오류가 발생했습니다.",
+          confirmButtonText: "확인",
+          confirmButtonColor: "#d3a179",
+          customClass: {
+            popup: "swal-custom-popup",
+            title: "swal-custom-title",
+            htmlContainer: "swal-custom-html-container",
+          },
+        });
+      }
     }
   };
 

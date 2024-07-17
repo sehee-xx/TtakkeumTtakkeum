@@ -6,6 +6,8 @@ import Loading from "@/components/Loading";
 import axios from "axios";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import styled from "styled-components";
+import withReactContent from "sweetalert2-react-content";
+import Swal from "sweetalert2";
 
 interface Comment {
   id: number;
@@ -17,6 +19,7 @@ const DochiLifeDetail = () => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const MySwal = withReactContent(Swal);
 
   const id = pathname.split("/").pop() || "0";
   const initialTitle = searchParams.get("title") || "제목 없음";
@@ -133,16 +136,16 @@ const DochiLifeDetail = () => {
 
   const handleCommentSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    console.log('click comment submit');
+    console.log("click comment submit");
     if (commentInput.trim()) {
       try {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem("token");
         // const userNickname = JSON.parse(
         //   localStorage.getItem('nickname') || 'null'
         // );
-        const userNickname = localStorage.getItem('nickname') || 'null';
+        const userNickname = localStorage.getItem("nickname") || "null";
 
-        console.log('userNickname', userNickname);
+        console.log("userNickname", userNickname);
         if (!userNickname) {
           console.error("닉네임을 불러오지 못했습니다.");
           return;
@@ -171,8 +174,61 @@ const DochiLifeDetail = () => {
           },
         ]);
         setCommentInput("");
+        if (window.innerWidth <= 768) {
+          MySwal.fire({
+            icon: "success",
+            title: "댓글이 등록되었습니다.",
+            toast: true,
+            position: "top-end",
+            showConfirmButton: false,
+            timer: 1000,
+            customClass: {
+              popup: "swal-custom-popup",
+              title: "swal-custom-title",
+              htmlContainer: "swal-custom-html-container",
+            },
+          });
+        } else {
+          MySwal.fire({
+            icon: "success",
+            title: "댓글이 등록되었습니다.",
+            confirmButtonText: "확인",
+            confirmButtonColor: "#d3a179",
+            customClass: {
+              popup: "swal-custom-popup",
+              title: "swal-custom-title",
+              htmlContainer: "swal-custom-html-container",
+            },
+          });
+        }
       } catch (error) {
-        console.error("댓글 등록 실패", error);
+        if (window.innerWidth <= 768) {
+          MySwal.fire({
+            icon: "error",
+            title: "댓글 등록에 실패했습니다.",
+            toast: true,
+            position: "top-end",
+            showConfirmButton: false,
+            timer: 1000,
+            customClass: {
+              popup: "swal-custom-popup",
+              title: "swal-custom-title",
+              htmlContainer: "swal-custom-html-container",
+            },
+          });
+        } else {
+          MySwal.fire({
+            icon: "error",
+            title: "댓글 등록에 실패했습니다.",
+            confirmButtonText: "확인",
+            confirmButtonColor: "#d3a179",
+            customClass: {
+              popup: "swal-custom-popup",
+              title: "swal-custom-title",
+              htmlContainer: "swal-custom-html-container",
+            },
+          });
+        }
       }
     }
   };
@@ -227,8 +283,61 @@ const DochiLifeDetail = () => {
         setEditCommentId(null);
         setEditCommentContent("");
       }
+      if (window.innerWidth <= 768) {
+        MySwal.fire({
+          icon: "success",
+          title: "댓글이 수정되었습니다.",
+          toast: true,
+          position: "top-end",
+          showConfirmButton: false,
+          timer: 1000,
+          customClass: {
+            popup: "swal-custom-popup",
+            title: "swal-custom-title",
+            htmlContainer: "swal-custom-html-container",
+          },
+        });
+      } else {
+        MySwal.fire({
+          icon: "success",
+          title: "댓글이 수정되었습니다.",
+          confirmButtonText: "확인",
+          confirmButtonColor: "#d3a179",
+          customClass: {
+            popup: "swal-custom-popup",
+            title: "swal-custom-title",
+            htmlContainer: "swal-custom-html-container",
+          },
+        });
+      }
     } catch (error) {
-      console.error("댓글 수정 실패", error);
+      if (window.innerWidth <= 768) {
+        MySwal.fire({
+          icon: "error",
+          title: "댓글 수정에 실패했습니다.",
+          toast: true,
+          position: "top-end",
+          showConfirmButton: false,
+          timer: 1000,
+          customClass: {
+            popup: "swal-custom-popup",
+            title: "swal-custom-title",
+            htmlContainer: "swal-custom-html-container",
+          },
+        });
+      } else {
+        MySwal.fire({
+          icon: "error",
+          title: "댓글 수정에 실패했습니다.",
+          confirmButtonText: "확인",
+          confirmButtonColor: "#d3a179",
+          customClass: {
+            popup: "swal-custom-popup",
+            title: "swal-custom-title",
+            htmlContainer: "swal-custom-html-container",
+          },
+        });
+      }
     }
   };
 
@@ -264,13 +373,62 @@ const DochiLifeDetail = () => {
         setContent(newContent);
         setNewTitle(newTitle);
         setIsEditModalOpen(false);
-        fetchCard(); // 수정 후 데이터를 다시 불러옴
+        fetchCard();
+        if (window.innerWidth <= 768) {
+          MySwal.fire({
+            icon: "success",
+            title: "게시글이 수정되었습니다.",
+            toast: true,
+            position: "top-end",
+            showConfirmButton: false,
+            timer: 1000,
+            customClass: {
+              popup: "swal-custom-popup",
+              title: "swal-custom-title",
+              htmlContainer: "swal-custom-html-container",
+            },
+          });
+        } else {
+          MySwal.fire({
+            icon: "success",
+            title: "게시글이 수정되었습니다.",
+            confirmButtonText: "확인",
+            confirmButtonColor: "#d3a179",
+            customClass: {
+              popup: "swal-custom-popup",
+              title: "swal-custom-title",
+              htmlContainer: "swal-custom-html-container",
+            },
+          });
+        }
       }
     } catch (error: unknown) {
-      if (axios.isAxiosError(error)) {
-        console.error("수정 요청을 처리하지 못했습니다.", error);
+      if (window.innerWidth <= 768) {
+        MySwal.fire({
+          icon: "error",
+          title: "게시글 수정 과정에서 오류가 발생했습니다.",
+          toast: true,
+          position: "top-end",
+          showConfirmButton: false,
+          timer: 1000,
+          customClass: {
+            popup: "swal-custom-popup",
+            title: "swal-custom-title",
+            htmlContainer: "swal-custom-html-container",
+          },
+        });
       } else {
-        console.error("알 수 없는 오류가 발생했습니다.", error);
+        MySwal.fire({
+          icon: "error",
+          title: "게시글 수정 과정에서 오류가 발생했습니다.",
+          confirmButtonText: "확인",
+          confirmButtonColor: "#d3a179",
+          customClass: {
+            popup: "swal-custom-popup",
+            title: "swal-custom-title",
+            htmlContainer: "swal-custom-html-container",
+          },
+        });
       }
     }
   };
@@ -310,15 +468,68 @@ const DochiLifeDetail = () => {
         `${process.env.NEXT_PUBLIC_BACKEND_HOSTNAME}/articles/${id}`,
         {
           headers: {
-            'Content-Type': `application/json`,
-            'ngrok-skip-browser-warning': '69420',
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
+            "Content-Type": `application/json`,
+            "ngrok-skip-browser-warning": "69420",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         }
       );
+      if (window.innerWidth <= 768) {
+        MySwal.fire({
+          icon: "success",
+          title: "게시글이 삭제되었습니다.",
+          toast: true,
+          position: "top-end",
+          showConfirmButton: false,
+          timer: 1000,
+          customClass: {
+            popup: "swal-custom-popup",
+            title: "swal-custom-title",
+            htmlContainer: "swal-custom-html-container",
+          },
+        });
+      } else {
+        MySwal.fire({
+          icon: "success",
+          title: "게시글이 삭제되었습니다.",
+          confirmButtonText: "확인",
+          confirmButtonColor: "#d3a179",
+          customClass: {
+            popup: "swal-custom-popup",
+            title: "swal-custom-title",
+            htmlContainer: "swal-custom-html-container",
+          },
+        });
+      }
       router.push("/dochiLife");
     } catch (error) {
-      console.error("삭제 실패", error);
+      if (window.innerWidth <= 768) {
+        MySwal.fire({
+          icon: "error",
+          title: "게시글 삭제 과정에서 오류가 발생했습니다.",
+          toast: true,
+          position: "top-end",
+          showConfirmButton: false,
+          timer: 1000,
+          customClass: {
+            popup: "swal-custom-popup",
+            title: "swal-custom-title",
+            htmlContainer: "swal-custom-html-container",
+          },
+        });
+      } else {
+        MySwal.fire({
+          icon: "error",
+          title: "게시글 삭제 과정에서 오류가 발생했습니다.",
+          confirmButtonText: "확인",
+          confirmButtonColor: "#d3a179",
+          customClass: {
+            popup: "swal-custom-popup",
+            title: "swal-custom-title",
+            htmlContainer: "swal-custom-html-container",
+          },
+        });
+      }
     }
   };
 
@@ -339,8 +550,61 @@ const DochiLifeDetail = () => {
           prevComments.filter((comment) => comment.id !== commentId)
         );
       }
+      if (window.innerWidth <= 768) {
+        MySwal.fire({
+          icon: "success",
+          title: "댓글이 삭제되었습니다.",
+          toast: true,
+          position: "top-end",
+          showConfirmButton: false,
+          timer: 1000,
+          customClass: {
+            popup: "swal-custom-popup",
+            title: "swal-custom-title",
+            htmlContainer: "swal-custom-html-container",
+          },
+        });
+      } else {
+        MySwal.fire({
+          icon: "success",
+          title: "댓글이 삭제되었습니다.",
+          confirmButtonText: "확인",
+          confirmButtonColor: "#d3a179",
+          customClass: {
+            popup: "swal-custom-popup",
+            title: "swal-custom-title",
+            htmlContainer: "swal-custom-html-container",
+          },
+        });
+      }
     } catch (error) {
-      console.error("댓글 삭제 실패", error);
+      if (window.innerWidth <= 768) {
+        MySwal.fire({
+          icon: "error",
+          title: "댓글이 삭제 과정에서 오류가 발생했습니다.",
+          toast: true,
+          position: "top-end",
+          showConfirmButton: false,
+          timer: 1000,
+          customClass: {
+            popup: "swal-custom-popup",
+            title: "swal-custom-title",
+            htmlContainer: "swal-custom-html-container",
+          },
+        });
+      } else {
+        MySwal.fire({
+          icon: "error",
+          title: "댓글이 삭제 과정에서 오류가 발생했습니다.",
+          confirmButtonText: "확인",
+          confirmButtonColor: "#d3a179",
+          customClass: {
+            popup: "swal-custom-popup",
+            title: "swal-custom-title",
+            htmlContainer: "swal-custom-html-container",
+          },
+        });
+      }
     }
   };
 

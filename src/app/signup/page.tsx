@@ -1,21 +1,21 @@
-'use client';
+"use client";
 
-import Header from '@/components/Header';
-import Loading from '@/components/Loading';
-import axios from 'axios';
-import { useEffect, useState } from 'react';
-import styled from 'styled-components';
-import withReactContent from 'sweetalert2-react-content';
-import Swal from 'sweetalert2';
-import { useRouter } from 'next/navigation';
+import Header from "@/components/Header";
+import Loading from "@/components/Loading";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import styled from "styled-components";
+import withReactContent from "sweetalert2-react-content";
+import Swal from "sweetalert2";
+import { useRouter } from "next/navigation";
 
 const Signup = () => {
   const [loading, setLoading] = useState(true);
-  const [nickname, setNickname] = useState(''); // 닉네임
-  const [dochiname, setDochiname] = useState(''); // 고슴도치 이름
-  const [email, setEmail] = useState(''); // 이메일
-  const [password, setPassword] = useState(''); // 비밀번호
-  const [confirmPassword, setConfirmPassword] = useState(''); // 비밀번호 확인
+  const [nickname, setNickname] = useState(""); // 닉네임
+  const [dochiname, setDochiname] = useState(""); // 고슴도치 이름
+  const [email, setEmail] = useState(""); // 이메일
+  const [password, setPassword] = useState(""); // 비밀번호
+  const [confirmPassword, setConfirmPassword] = useState(""); // 비밀번호 확인
   const router = useRouter();
   const MySwal = withReactContent(Swal);
 
@@ -24,11 +24,11 @@ const Signup = () => {
       setLoading(false);
     };
 
-    if (document.readyState === 'complete') {
+    if (document.readyState === "complete") {
       handleLoad();
     } else {
-      window.addEventListener('load', handleLoad);
-      return () => window.removeEventListener('load', handleLoad);
+      window.addEventListener("load", handleLoad);
+      return () => window.removeEventListener("load", handleLoad);
     }
   }, []);
 
@@ -40,30 +40,30 @@ const Signup = () => {
     if (password !== confirmPassword) {
       if (window.innerWidth <= 768) {
         MySwal.fire({
-          icon: 'error',
-          title: '비밀번호 오류',
-          text: '비밀번호를 다시 확인해주세요!',
+          icon: "error",
+          title: "비밀번호 오류",
+          text: "비밀번호를 다시 확인해주세요!",
           toast: true,
-          position: 'top-end',
+          position: "top-end",
           showConfirmButton: false,
           timer: 1000,
           customClass: {
-            popup: 'swal-custom-popup',
-            title: 'swal-custom-title',
-            htmlContainer: 'swal-custom-html-container',
+            popup: "swal-custom-popup",
+            title: "swal-custom-title",
+            htmlContainer: "swal-custom-html-container",
           },
         });
       } else {
         MySwal.fire({
-          icon: 'error',
-          title: '비밀번호 오류',
-          text: '비밀번호를 다시 확인해주세요!',
-          confirmButtonText: '확인',
-          confirmButtonColor: '#d3a179',
+          icon: "error",
+          title: "비밀번호 오류",
+          text: "비밀번호를 다시 확인해주세요!",
+          confirmButtonText: "확인",
+          confirmButtonColor: "#d3a179",
           customClass: {
-            popup: 'swal-custom-popup',
-            title: 'swal-custom-title',
-            htmlContainer: 'swal-custom-html-container',
+            popup: "swal-custom-popup",
+            title: "swal-custom-title",
+            htmlContainer: "swal-custom-html-container",
           },
         });
       }
@@ -81,10 +81,64 @@ const Signup = () => {
         }
       );
       console.log(response.data);
-      localStorage.setItem('nickname', JSON.stringify('고슴도치'));
-      router.push('/signin');
+      localStorage.setItem("nickname", JSON.stringify("고슴도치"));
+      if (window.innerWidth <= 768) {
+        MySwal.fire({
+          icon: "success",
+          title: "회원가입 성공",
+          toast: true,
+          position: "top-end",
+          showConfirmButton: false,
+          timer: 1000,
+          customClass: {
+            popup: "swal-custom-popup",
+            title: "swal-custom-title",
+            htmlContainer: "swal-custom-html-container",
+          },
+        });
+      } else {
+        MySwal.fire({
+          icon: "success",
+          title: "회원가입 성공",
+          confirmButtonText: "확인",
+          confirmButtonColor: "#d3a179",
+          customClass: {
+            popup: "swal-custom-popup",
+            title: "swal-custom-title",
+            htmlContainer: "swal-custom-html-container",
+          },
+        });
+      }
+      router.push("/signin");
     } catch (error) {
-      console.error('회원가입 실패', error);
+      console.error("회원가입 실패", error);
+      if (window.innerWidth <= 768) {
+        MySwal.fire({
+          icon: "error",
+          title: "회원가입 실패",
+          toast: true,
+          position: "top-end",
+          showConfirmButton: false,
+          timer: 1000,
+          customClass: {
+            popup: "swal-custom-popup",
+            title: "swal-custom-title",
+            htmlContainer: "swal-custom-html-container",
+          },
+        });
+      } else {
+        MySwal.fire({
+          icon: "error",
+          title: "회원가입 실패",
+          confirmButtonText: "확인",
+          confirmButtonColor: "#d3a179",
+          customClass: {
+            popup: "swal-custom-popup",
+            title: "swal-custom-title",
+            htmlContainer: "swal-custom-html-container",
+          },
+        });
+      }
     }
   };
 
